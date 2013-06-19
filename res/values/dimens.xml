@@ -1,0 +1,7 @@
+<resources>
+
+    <dimen name="field_height">40dp</dimen>
+    <dimen name="content_padding">15dp</dimen>
+    <dimen name="text_size">13sp</dimen>
+
+</resources>
