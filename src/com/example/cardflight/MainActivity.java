@@ -161,7 +161,10 @@ public class MainActivity extends Activity {
 
 		// process payment
 
-		mCardFlight.processPayment(Float.valueOf(price), mCardData,
+        String description = "This is a description";
+        String currency = "USD";
+
+		mCardFlight.processPayment(Float.valueOf(price), description, currency, mCardData,
 				new CardFlightPaymentHandler() {
 
 					@Override
