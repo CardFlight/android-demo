@@ -5,15 +5,25 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="wrap_content"
         android:padding="@dimen/content_padding" >
 
         <TextView
             android:id="@+id/priceLabel"
             android:layout_width="100dp"
             android:layout_height="@dimen/field_height"
-            android:text="@string/price"
+            android:text="@string/description"
             android:textSize="@dimen/text_size" />
+
+        <TextView
+            android:id="@+id/priceLabel"
+            android:layout_width="100dp"
+            android:layout_height="@dimen/field_height"
+            android:text="@string/price"
+            android:textSize="@dimen/text_size"
+            android:layout_alignBaseline="@+id/nameLabel"
+            android:layout_alignBottom="@+id/nameLabel"
+            android:layout_alignLeft="@+id/priceLabel" />
 
         <EditText
             android:id="@+id/priceEditText"
@@ -24,53 +34,18 @@
             android:textSize="@dimen/text_size" />
 
         <TextView
-            android:id="@+id/descriptionLabel"
-            android:layout_width="100dp"
-            android:layout_height="@dimen/field_height"
-            android:text="Description:"
-            android:layout_below="@+id/priceEditText"
-            android:textSize="@dimen/text_size"/>
-
-        <EditText
-            android:id="@+id/descriptionEditText"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/field_height"
-            android:layout_toRightOf="@+id/descriptionLabel"
-            android:layout_below="@+id/priceEditText"
-            android:textSize="@dimen/text_size"
-            />
-
-
-        <TextView
-            android:id="@+id/currencyLabel"
-            android:layout_width="100dp"
-            android:layout_height="@dimen/field_height"
-            android:text="Currency:"
-            android:layout_below="@+id/descriptionEditText"
-            android:textSize="@dimen/text_size"/>
-
-        <EditText
-            android:id="@+id/currencyEditText"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/field_height"
-            android:layout_toRightOf="@+id/descriptionLabel"
-            android:layout_below="@+id/descriptionEditText"
-            android:textSize="@dimen/text_size"
-            />
-
-
-        <TextView
             android:id="@+id/nameLabel"
             android:layout_width="100dp"
             android:layout_height="@dimen/field_height"
-            android:layout_below="@+id/currencyEditText"
-            android:text="@string/person_name" />
+            android:text="@string/person_name"
+            android:layout_alignTop="@+id/priceLabel"
+            android:layout_alignLeft="@+id/priceLabel" />
 
         <EditText
             android:id="@+id/nameEditText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/field_height"
-            android:layout_below="@+id/currencyLabel"
+            android:layout_below="@+id/priceEditText"
             android:layout_toRightOf="@+id/nameLabel"
             android:enabled="false"
             android:hint="@string/person_name_hint"

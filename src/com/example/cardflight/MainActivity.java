@@ -23,7 +23,7 @@ public class MainActivity extends Activity {
 	private static final String API_TOKEN = "e9cb15860f08e738b792951891d4ba4f";
 	private static final String ACCOUNT_TOKEN = "08ff8bf670afe268";
 
-	private EditText mPriceEditText, mPersonNameEditText, mCardEditText,
+	private EditText mPriceEditText, mCurrencyEditText, mDescriptionEditText, mPersonNameEditText, mCardEditText,
 			mCVVEditText, mExpireDateEditText;
 	
 	private static final String CARD_DATA_KEY = "cardData";
@@ -41,6 +41,8 @@ public class MainActivity extends Activity {
 		mCardEditText = (EditText) findViewById(R.id.cardEditText);
 		mCVVEditText = (EditText) findViewById(R.id.cvvCodeEditText);
 		mExpireDateEditText = (EditText) findViewById(R.id.expireDateEditText);
+        mCurrencyEditText = (EditText) findViewById(R.id.currencyEditText);
+        mDescriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
 		
 
 		// init cardFlight
@@ -161,8 +163,8 @@ public class MainActivity extends Activity {
 
 		// process payment
 
-        String description = "This is a description";
-        String currency = "USD";
+        String description = mDescriptionEditText.getText().toString();
+        String currency = mCurrencyEditText.getText().toString();
 
 		mCardFlight.processPayment(Float.valueOf(price), description, currency, mCardData,
 				new CardFlightPaymentHandler() {

@@ -12,5 +12,7 @@
     <string name="card_number">Card number:</string>
     <string name="cvv_hint">1234</string>
     <string name="expire_date_hint">MM / YYYY</string>
+    <string name="currency">Currency:</string>
+    <string name="description">Description:</string>
 
 </resources>
