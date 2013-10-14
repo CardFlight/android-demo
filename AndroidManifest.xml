@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.cardflight.ManualEntryActivity" >
+        <activity android:name="com.getcardflight.activities.ManualEntryActivity" >
         </activity>
 ￼
     </application>

@@ -9,19 +9,21 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.cardflight.CardDetailsData;
-import com.cardflight.CardFlight;
-import com.cardflight.CardFlightDeviceHandler;
-import com.cardflight.CardFlightPaymentHandler;
-import com.cardflight.ManualEntryActivity;
+import com.getcardflight.models.CardDetailsData;
+import com.getcardflight.models.Charge;
+import com.getcardflight.interfaces.CardFlightDeviceHandler;
+import com.getcardflight.interfaces.CardFlightPaymentHandler;
+import com.getcardflight.activities.ManualEntryActivity;
+
+import java.util.HashMap;
 
 public class MainActivity extends Activity {
 
-	private CardFlight mCardFlight;
+	private Charge charge;
 	private CardDetailsData mCardData;
 
-	private static final String API_TOKEN = "e9cb15860f08e738b792951891d4ba4f";
-	private static final String ACCOUNT_TOKEN = "08ff8bf670afe268";
+	private static final String API_TOKEN = "4fb831302debeb03128c5c23633a5b42";
+	private static final String ACCOUNT_TOKEN = "c10aa9a847b55d87";
 
 	private EditText mPriceEditText, mCurrencyEditText, mDescriptionEditText, mPersonNameEditText, mCardEditText,
 			mCVVEditText, mExpireDateEditText;
@@ -46,8 +48,8 @@ public class MainActivity extends Activity {
 		
 
 		// init cardFlight
-		mCardFlight = new CardFlight(getApplicationContext(), API_TOKEN,
-				ACCOUNT_TOKEN, new CardFlightDeviceHandler() {
+		charge = new Charge(API_TOKEN, ACCOUNT_TOKEN,
+				getApplicationContext(), new CardFlightDeviceHandler() {
 
 					@Override
 					public void deviceConnecting() {
@@ -150,7 +152,7 @@ public class MainActivity extends Activity {
 
 	public void launchSwipeEvent(View view) {
 
-		mCardFlight.beginSwipe();
+		charge.beginSwipe();
 
 		resetFields();
 	}
@@ -166,28 +168,33 @@ public class MainActivity extends Activity {
         String description = mDescriptionEditText.getText().toString();
         String currency = mCurrencyEditText.getText().toString();
 
-		mCardFlight.processPayment(Float.valueOf(price), description, currency, mCardData,
-				new CardFlightPaymentHandler() {
+        HashMap chargeDetailsHash = new HashMap();
+        chargeDetailsHash.put(Charge.REQUEST_KEY_CURRENCY, currency);
+        chargeDetailsHash.put(Charge.REQUEST_KEY_DESCRIPTION, description);
+        chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, Double.valueOf(price));
+        chargeDetailsHash.put(Charge.REQUEST_KEY_CARD_DETAILS, mCardData);
 
-					@Override
-					public void transactionSuccessful(String result) {
-						// TODO Auto-generated method stub
-						Toast.makeText(getApplicationContext(), result,
-								Toast.LENGTH_SHORT).show();
+		charge.create(chargeDetailsHash, new CardFlightPaymentHandler() {
 
-						resetFields();
+                    @Override
+                    public void transactionSuccessful(String result) {
+                        // TODO Auto-generated method stub
+                        Toast.makeText(getApplicationContext(), result,
+                                Toast.LENGTH_SHORT).show();
 
-					}
+                        resetFields();
 
-					@Override
-					public void transactionFailed(String error) {
-						Toast.makeText(getApplicationContext(), error,
-								Toast.LENGTH_SHORT).show();
+                    }
 
-						resetFields();
+                    @Override
+                    public void transactionFailed(String error) {
+                        Toast.makeText(getApplicationContext(), error,
+                                Toast.LENGTH_SHORT).show();
 
-					}
-				});
+                        resetFields();
+
+                    }
+                });
 	}
 
 	@Override
@@ -229,7 +236,7 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 
 		// destroy cardflight instance
-		mCardFlight.destroy();
+		charge.destroy();
 	}
 
 }
