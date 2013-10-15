@@ -149,7 +149,20 @@
             android:onClick="processPayment"
             android:text="@string/process_payment"
             android:textSize="13sp" >
+
+
         </Button>
+
+        <Button
+            android:layout_width="200dp"
+            android:layout_height="@dimen/field_height"
+            android:text="Serial Number"
+            android:id="@+id/serialNumber"
+            android:textSize="13sp"
+            android:onClick="displaySerialNumber"
+            android:layout_below="@+id/processPaymentButton"
+            android:layout_alignLeft="@+id/processPaymentButton" />
+
     </RelativeLayout>
 
 </ScrollView>

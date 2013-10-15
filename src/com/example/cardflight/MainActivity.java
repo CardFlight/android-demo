@@ -17,6 +17,9 @@ import com.getcardflight.activities.ManualEntryActivity;
 
 import java.util.HashMap;
 
+import IDTech.MSR.uniMag.uniMagReader;
+import IDTech.MSR.uniMag.uniMagReaderMsg;
+
 public class MainActivity extends Activity {
 
 	private Charge charge;
@@ -157,6 +160,11 @@ public class MainActivity extends Activity {
 		resetFields();
 	}
 
+    public void displaySerialNumber(View view) {
+        String s = Charge.getSerialNumber();
+        Toast.makeText(getApplicationContext(),s, 10).show();
+    }
+
 	public void processPayment(View view) {
 
 		String price = mPriceEditText.getText().toString();
@@ -169,10 +177,12 @@ public class MainActivity extends Activity {
         String currency = mCurrencyEditText.getText().toString();
 
         HashMap chargeDetailsHash = new HashMap();
-        chargeDetailsHash.put(Charge.REQUEST_KEY_CURRENCY, currency);
-        chargeDetailsHash.put(Charge.REQUEST_KEY_DESCRIPTION, description);
-        chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, Double.valueOf(price));
-        chargeDetailsHash.put(Charge.REQUEST_KEY_CARD_DETAILS, mCardData);
+        chargeDetailsHash.put("currency", currency);
+        chargeDetailsHash.put("description", description);
+        chargeDetailsHash.put("amount", Double.valueOf(price));
+        chargeDetailsHash.put("card_details", mCardData);
+
+
 
 		charge.create(chargeDetailsHash, new CardFlightPaymentHandler() {
 
