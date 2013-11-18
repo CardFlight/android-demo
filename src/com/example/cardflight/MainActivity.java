@@ -183,12 +183,11 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void transactionSuccessful(String result) {
-                        // TODO Auto-generated method stub
-                        Toast.makeText(getApplicationContext(), result,
+
+                        Toast.makeText(getApplicationContext(), "Transaction successful",
                                 Toast.LENGTH_SHORT).show();
 
                         resetFields();
-
                     }
 
                     @Override
