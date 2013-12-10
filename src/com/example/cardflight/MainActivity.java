@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.getcardflight.models.CardDetailsData;
+import com.getcardflight.models.Card;
 import com.getcardflight.models.Charge;
 import com.getcardflight.interfaces.CardFlightDeviceHandler;
 import com.getcardflight.interfaces.CardFlightPaymentHandler;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class MainActivity extends Activity {
 
 	private Charge charge;
-	private CardDetailsData mCardData;
+	private Card mCardData;
 
 	private static final String API_TOKEN = "4fb831302debeb03128c5c23633a5b42";
 	private static final String ACCOUNT_TOKEN = "c10aa9a847b55d87";
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
 					}
 
 					@Override
-					public void deviceSwipeCompleted(CardDetailsData cardData) {
+					public void deviceSwipeCompleted(Card cardData) {
 						// TODO Auto-generated method stub
 
 						Toast.makeText(getApplicationContext(),
@@ -226,7 +226,7 @@ public class MainActivity extends Activity {
 		mExpireDateEditText.setText("");
 	}
 
-	private void fillFieldsWithData(CardDetailsData cardData) {
+	private void fillFieldsWithData(Card cardData) {
 		mPersonNameEditText.setText(cardData.getPersonName());
 		mCardEditText.setText(cardData.getCardNumber());
 		mCVVEditText.setText(cardData.getCVVCode());
