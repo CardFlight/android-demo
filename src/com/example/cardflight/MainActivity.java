@@ -52,14 +52,14 @@ public class MainActivity extends Activity {
 				getApplicationContext(), new CardFlightDeviceHandler() {
 
 					@Override
-					public void deviceConnecting() {
+					public void readerIsConnecting() {
 						Toast.makeText(getApplicationContext(),
 								"Device connecting", Toast.LENGTH_SHORT).show();
 
 					}
 
 					@Override
-					public void deviceConnected() {
+					public void readerIsAttached() {
 						// TODO Auto-generated method stub
 						Toast.makeText(getApplicationContext(),
 								"Device connected", Toast.LENGTH_SHORT).show();
@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
 					}
 
 					@Override
-					public void deviceDisconnected() {
+					public void readerIsDisconnected() {
 						// TODO Auto-generated method stub
 						Toast.makeText(getApplicationContext(),
 								"Device disconnected", Toast.LENGTH_SHORT)
@@ -158,6 +158,7 @@ public class MainActivity extends Activity {
 	}
 
     public void displaySerialNumber(View view) {
+
         String s = Charge.getSerialNumber();
         Toast.makeText(getApplicationContext(),s, 10).show();
     }
