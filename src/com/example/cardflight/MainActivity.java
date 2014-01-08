@@ -10,17 +10,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.getcardflight.models.Card;
+import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.Charge;
 import com.getcardflight.interfaces.CardFlightDeviceHandler;
 import com.getcardflight.interfaces.CardFlightPaymentHandler;
-import com.getcardflight.activities.ManualEntryActivity;
+import com.getcardflight.views.CustomView;
 
 import java.util.HashMap;
 
 public class MainActivity extends Activity {
 
 	private Charge charge;
-	private Card mCardData;
+	private Card mCard;
 
 	private static final String API_TOKEN = "4fb831302debeb03128c5c23633a5b42";
 	private static final String ACCOUNT_TOKEN = "c10aa9a847b55d87";
@@ -36,7 +37,10 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); 
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        CardFlight.getInstance().setApiToken(API_TOKEN);
+        CardFlight.getInstance().setAccountToken(ACCOUNT_TOKEN);
 
 		mPriceEditText = (EditText) findViewById(R.id.priceEditText);
 		mPersonNameEditText = (EditText) findViewById(R.id.nameEditText);
@@ -45,11 +49,9 @@ public class MainActivity extends Activity {
 		mExpireDateEditText = (EditText) findViewById(R.id.expireDateEditText);
         mCurrencyEditText = (EditText) findViewById(R.id.currencyEditText);
         mDescriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
-		
 
 		// init cardFlight
-		charge = new Charge(API_TOKEN, ACCOUNT_TOKEN,
-				getApplicationContext(), new CardFlightDeviceHandler() {
+		charge = new Charge(getApplicationContext(), new CardFlightDeviceHandler() {
 
 					@Override
 					public void readerIsConnecting() {
@@ -85,16 +87,16 @@ public class MainActivity extends Activity {
 					}
 
 					@Override
-					public void deviceSwipeCompleted(Card cardData) {
+					public void deviceSwipeCompleted(Card card) {
 						// TODO Auto-generated method stub
 
 						Toast.makeText(getApplicationContext(),
 								"Device swipe completed", Toast.LENGTH_SHORT)
 								.show();
 
-						mCardData = cardData;
+						mCard = card;
 
-						fillFieldsWithData(cardData);
+						fillFieldsWithData(card);
 
 					}
 
@@ -131,8 +133,8 @@ public class MainActivity extends Activity {
 		
 		if (savedInstanceState != null && savedInstanceState.containsKey(CARD_DATA_KEY))
 		{
-			mCardData = savedInstanceState.getParcelable(CARD_DATA_KEY);
-			fillFieldsWithData(mCardData);
+			mCard = savedInstanceState.getParcelable(CARD_DATA_KEY);
+			fillFieldsWithData(mCard);
 		}
 
 	}
@@ -141,13 +143,8 @@ public class MainActivity extends Activity {
 	@Override 
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if (mCardData != null)
-			outState.putParcelable(CARD_DATA_KEY, mCardData);
-	}
-
-	public void launchManualEntry(View view) {
-		startActivityForResult(new Intent(this, ManualEntryActivity.class),
-				ManualEntryActivity.MANUAL_ENTRY_REQUEST_CODE);
+		if (mCard != null)
+			outState.putParcelable(CARD_DATA_KEY, mCard);
 	}
 
 	public void launchSwipeEvent(View view) {
@@ -167,7 +164,15 @@ public class MainActivity extends Activity {
 
 		String price = mPriceEditText.getText().toString();
 		if (TextUtils.isEmpty(price))
+        {
 			return;
+        }
+
+        // generate card object if custom manual entry
+        if (mCard == null)
+        {
+            mCard = CustomView.getInstance().generateCard();
+        }
 
 		// process payment
 
@@ -178,7 +183,7 @@ public class MainActivity extends Activity {
         chargeDetailsHash.put(Charge.REQUEST_KEY_CURRENCY, currency);
         chargeDetailsHash.put(Charge.REQUEST_KEY_DESCRIPTION, description);
         chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, Double.valueOf(price));
-        chargeDetailsHash.put(Charge.REQUEST_KEY_CARD_DETAILS, mCardData);
+        chargeDetailsHash.put(Charge.REQUEST_KEY_CARD_DETAILS, mCard);
 
 		charge.create(chargeDetailsHash, new CardFlightPaymentHandler() {
 
@@ -202,25 +207,9 @@ public class MainActivity extends Activity {
                 });
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == RESULT_OK
-				&& requestCode == ManualEntryActivity.MANUAL_ENTRY_REQUEST_CODE) {
-			mCardData = data
-					.getParcelableExtra(ManualEntryActivity.EXTRA_CARD_DETAILS);
-
-			if (mCardData != null)
-				fillFieldsWithData(mCardData);
-
-		}
-
-	}
-
 	private void resetFields() {
 
-		mCardData = null;
+		mCard = null;
 		mPersonNameEditText.setText("");
 		mCardEditText.setText("");
 		mCVVEditText.setText("");
@@ -228,11 +217,11 @@ public class MainActivity extends Activity {
 	}
 
 	private void fillFieldsWithData(Card cardData) {
-		mPersonNameEditText.setText(cardData.getPersonName());
+		mPersonNameEditText.setText(cardData.getName());
 		mCardEditText.setText(cardData.getCardNumber());
 		mCVVEditText.setText(cardData.getCVVCode());
-		mExpireDateEditText.setText(cardData.getExpireMonth() + "/"
-				+ cardData.getExpireYear());
+		mExpireDateEditText.setText(cardData.getExpirationMonth() + "/"
+				+ cardData.getExpirationYear());
 
 	}
 

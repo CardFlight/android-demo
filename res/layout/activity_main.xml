@@ -13,6 +13,7 @@
             android:layout_width="100dp"
             android:layout_height="@dimen/field_height"
             android:text="@string/price"
+            android:gravity="center|left"
             android:textSize="@dimen/text_size" />
 
         <EditText
@@ -28,6 +29,7 @@
             android:layout_width="100dp"
             android:layout_height="@dimen/field_height"
             android:text="Description:"
+            android:gravity="center|left"
             android:layout_below="@+id/priceEditText"
             android:textSize="@dimen/text_size"/>
 
@@ -46,6 +48,7 @@
             android:layout_width="100dp"
             android:layout_height="@dimen/field_height"
             android:text="Currency:"
+            android:gravity="center|left"
             android:layout_below="@+id/descriptionEditText"
             android:textSize="@dimen/text_size"/>
 
@@ -64,6 +67,7 @@
             android:layout_width="100dp"
             android:layout_height="@dimen/field_height"
             android:layout_below="@+id/currencyEditText"
+            android:gravity="center|left"
             android:text="@string/person_name" />
 
         <EditText
@@ -72,7 +76,7 @@
             android:layout_height="@dimen/field_height"
             android:layout_below="@+id/currencyLabel"
             android:layout_toRightOf="@+id/nameLabel"
-            android:enabled="false"
+            android:enabled="true"
             android:hint="@string/person_name_hint"
             android:inputType="textPersonName"
             android:textSize="@dimen/text_size" />
@@ -83,20 +87,22 @@
             android:layout_height="@dimen/field_height"
             android:layout_below="@+id/nameEditText"
             android:text="@string/card_number"
+            android:gravity="center|left"
             android:textSize="@dimen/text_size" />
 
-        <EditText
+        <com.getcardflight.views.CardNumberTextView
             android:id="@+id/cardEditText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/field_height"
             android:layout_below="@+id/nameEditText"
             android:layout_toRightOf="@+id/cardNumberLabel"
-            android:enabled="false"
+            android:enabled="true"
             android:hint="@string/credit_card_hint"
             android:inputType="phone"
-            android:textSize="@dimen/text_size" />
+            android:textSize="@dimen/text_size"
+        />
 
-        <EditText
+        <com.getcardflight.views.CvvNumberTextView
             android:id="@+id/cvvCodeEditText"
             android:layout_width="90dp"
             android:layout_height="@dimen/field_height"
@@ -107,13 +113,13 @@
             android:inputType="number"
             android:textSize="@dimen/text_size" />
 
-        <EditText
+        <com.getcardflight.views.ExpiryDateTextView
             android:id="@+id/expireDateEditText"
             android:layout_width="100dp"
             android:layout_height="@dimen/field_height"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/cardEditText"
-            android:enabled="false"
+            android:enabled="true"
             android:hint="@string/expire_date_hint"
             android:inputType="datetime"
             android:textSize="@dimen/text_size" />
@@ -129,29 +135,15 @@
             android:textSize="13sp" />
 
         <Button
-            android:id="@+id/manualEntryButton"
+            android:id="@+id/processPaymentButton"
             android:layout_width="140dp"
             android:layout_height="@dimen/field_height"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/expireDateEditText"
             android:layout_marginTop="@dimen/content_padding"
-            android:onClick="launchManualEntry"
-            android:text="@string/manual_entry"
-            android:textSize="13sp" />
-
-        <Button
-            android:id="@+id/processPaymentButton"
-            android:layout_width="200dp"
-            android:layout_height="@dimen/field_height"
-            android:layout_below="@+id/manualEntryButton"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/content_padding"
             android:onClick="processPayment"
             android:text="@string/process_payment"
-            android:textSize="13sp" >
-
-
-        </Button>
+            android:textSize="13sp" />
 
         <Button
             android:layout_width="200dp"
@@ -160,8 +152,9 @@
             android:id="@+id/serialNumber"
             android:textSize="13sp"
             android:onClick="displaySerialNumber"
-            android:layout_below="@+id/processPaymentButton"
-            android:layout_alignLeft="@+id/processPaymentButton" />
+            android:layout_marginTop="22dp"
+            android:layout_below="@+id/swipeCardButton"
+            android:layout_centerHorizontal="true" />
 
     </RelativeLayout>
 

@@ -6,7 +6,7 @@
     <string name="manual_entry">Manual Entry</string>
     <string name="send_swipe_data">Send swipe data</string>
     <string name="process_payment">Process payment</string>
-    <string name="person_name">Person name:</string>
+    <string name="person_name">Card Name:</string>
     <string name="person_name_hint">FIRSTNAME LASTNAME</string>
     <string name="credit_card_hint">1234 5678 1234 5678</string>
     <string name="card_number">Card number:</string>
