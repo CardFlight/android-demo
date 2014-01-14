@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.getcardflight.models.Card;
 import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.Charge;
+import com.getcardflight.models.Reader;
 import com.getcardflight.interfaces.CardFlightDeviceHandler;
 import com.getcardflight.interfaces.CardFlightPaymentHandler;
 import com.getcardflight.views.CustomView;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 public class MainActivity extends Activity {
 
 	private Charge charge;
+    private Reader reader;
 	private Card mCard;
 
 	private static final String API_TOKEN = "4fb831302debeb03128c5c23633a5b42";
@@ -50,7 +52,8 @@ public class MainActivity extends Activity {
         mDescriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
 
 		// init cardFlight
-		charge = new Charge(getApplicationContext(), new CardFlightDeviceHandler() {
+        // create new Card object
+		reader = new Reader(getApplicationContext(), new CardFlightDeviceHandler() {
 
 					@Override
 					public void readerIsConnecting() {
@@ -148,14 +151,14 @@ public class MainActivity extends Activity {
 
 	public void launchSwipeEvent(View view) {
 
-		charge.beginSwipe();
+		reader.beginSwipe();
 
 		resetFields();
 	}
 
     public void displaySerialNumber(View view) {
 
-        String s = Charge.getSerialNumber();
+        String s = reader.serialNumber;
         Toast.makeText(getApplicationContext(),s, 10).show();
     }
 
@@ -184,10 +187,10 @@ public class MainActivity extends Activity {
         chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, Double.valueOf(price));
         chargeDetailsHash.put(Charge.REQUEST_KEY_CARD_DETAILS, mCard);
 
-		charge.create(chargeDetailsHash, new CardFlightPaymentHandler() {
+		mCard.chargeCard(chargeDetailsHash, new CardFlightPaymentHandler() {
 
                     @Override
-                    public void transactionSuccessful(String result) {
+                    public void transactionSuccessful(Charge charge) {
 
                         Toast.makeText(getApplicationContext(), "Transaction successful",
                                 Toast.LENGTH_SHORT).show();
@@ -229,7 +232,7 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 
 		// destroy cardflight instance
-		charge.destroy();
+		reader.destroy();
 	}
 
 }
