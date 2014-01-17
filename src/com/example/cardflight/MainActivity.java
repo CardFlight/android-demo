@@ -182,10 +182,9 @@ public class MainActivity extends Activity {
         String currency = mCurrencyEditText.getText().toString();
 
         HashMap chargeDetailsHash = new HashMap();
-        chargeDetailsHash.put(Charge.REQUEST_KEY_CURRENCY, currency);
-        chargeDetailsHash.put(Charge.REQUEST_KEY_DESCRIPTION, description);
-        chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, Double.valueOf(price));
-        chargeDetailsHash.put(Charge.REQUEST_KEY_CARD_DETAILS, mCard);
+        chargeDetailsHash.put(mCard.REQUEST_KEY_CURRENCY, currency);
+        chargeDetailsHash.put(mCard.REQUEST_KEY_DESCRIPTION, description);
+        chargeDetailsHash.put(mCard.REQUEST_KEY_AMOUNT, Double.valueOf(price));
 
 		mCard.chargeCard(chargeDetailsHash, new CardFlightPaymentHandler() {
 
