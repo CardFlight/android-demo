@@ -40,8 +40,7 @@ public class MainActivity extends Activity {
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        CardFlight.getInstance().setApiToken(API_TOKEN);
-        CardFlight.getInstance().setAccountToken(ACCOUNT_TOKEN);
+        CardFlight.getInstance().setApiTokenAndAccountToken(API_TOKEN, ACCOUNT_TOKEN);
 
 		mPriceEditText = (EditText) findViewById(R.id.priceEditText);
 		mPersonNameEditText = (EditText) findViewById(R.id.nameEditText);
@@ -51,8 +50,6 @@ public class MainActivity extends Activity {
         mCurrencyEditText = (EditText) findViewById(R.id.currencyEditText);
         mDescriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
 
-		// init cardFlight
-        // create new Card object
 		reader = new Reader(getApplicationContext(), new CardFlightDeviceHandler() {
 
 					@Override
@@ -89,7 +86,7 @@ public class MainActivity extends Activity {
 					}
 
 					@Override
-					public void deviceSwipeCompleted(Card card) {
+					public void readerCardResponse(Card card) {
 						// TODO Auto-generated method stub
 
 						Toast.makeText(getApplicationContext(),
@@ -99,7 +96,6 @@ public class MainActivity extends Activity {
 						mCard = card;
 
 						fillFieldsWithData(card);
-
 					}
 
 					@Override
@@ -223,7 +219,6 @@ public class MainActivity extends Activity {
 		mCVVEditText.setText(cardData.getCVVCode());
 		mExpireDateEditText.setText(cardData.getExpirationMonth() + "/"
 				+ cardData.getExpirationYear());
-
 	}
 
 	@Override
