@@ -90,45 +90,18 @@
             android:gravity="center|left"
             android:textSize="@dimen/text_size" />
 
-        <com.getcardflight.views.CardNumberTextView
+        <com.getcardflight.views.PaymentView
             android:id="@+id/cardEditText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/field_height"
-            android:layout_below="@+id/nameEditText"
-            android:layout_toRightOf="@+id/cardNumberLabel"
-            android:enabled="true"
-            android:hint="@string/credit_card_hint"
-            android:inputType="phone"
-            android:textSize="@dimen/text_size"
-        />
+            android:layout_below="@+id/cardNumberLabel"/>
 
-        <com.getcardflight.views.CvvNumberTextView
-            android:id="@+id/cvvCodeEditText"
-            android:layout_width="90dp"
-            android:layout_height="@dimen/field_height"
-            android:layout_below="@+id/cardEditText"
-            android:layout_toRightOf="@+id/cardNumberLabel"
-            android:enabled="false"
-            android:hint="@string/cvv_hint"
-            android:inputType="number"
-            android:textSize="@dimen/text_size" />
-
-        <com.getcardflight.views.ExpiryDateTextView
-            android:id="@+id/expireDateEditText"
-            android:layout_width="100dp"
-            android:layout_height="@dimen/field_height"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/cardEditText"
-            android:enabled="true"
-            android:hint="@string/expire_date_hint"
-            android:inputType="datetime"
-            android:textSize="@dimen/text_size" />
 
         <Button
             android:id="@+id/swipeCardButton"
             android:layout_width="140dp"
             android:layout_height="@dimen/field_height"
-            android:layout_below="@+id/expireDateEditText"
+            android:layout_below="@+id/cardEditText"
             android:layout_marginTop="@dimen/content_padding"
             android:onClick="launchSwipeEvent"
             android:text="@string/swipe_card"
@@ -139,7 +112,7 @@
             android:layout_width="140dp"
             android:layout_height="@dimen/field_height"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/expireDateEditText"
+            android:layout_below="@+id/cardEditText"
             android:layout_marginTop="@dimen/content_padding"
             android:onClick="processPayment"
             android:text="@string/process_payment"

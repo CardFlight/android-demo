@@ -1,5 +1,7 @@
 package com.example.cardflight;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -8,15 +10,15 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.getcardflight.interfaces.CardFlightDeviceHandler;
+import com.getcardflight.interfaces.CardFlightPaymentHandler;
+import com.getcardflight.interfaces.OnCardKeyedListener;
 import com.getcardflight.models.Card;
 import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
-import com.getcardflight.interfaces.CardFlightDeviceHandler;
-import com.getcardflight.interfaces.CardFlightPaymentHandler;
-import com.getcardflight.views.CustomView;
-
-import java.util.HashMap;
+import com.getcardflight.views.PaymentView;
+import com.getcardflight.views.deprecated.CustomView;
 
 public class MainActivity extends Activity {
 
@@ -24,11 +26,14 @@ public class MainActivity extends Activity {
     private Reader reader;
 	private Card mCard;
 
-	private static final String API_TOKEN = "4fb831302debeb03128c5c23633a5b42";
-	private static final String ACCOUNT_TOKEN = "c10aa9a847b55d87";
+//	private static final String API_TOKEN = "4fb831302debeb03128c5c23633a5b42";
+//	private static final String ACCOUNT_TOKEN = "c10aa9a847b55d87";
+	private static final String API_TOKEN = "0d86293deea388ce116c2fad60f71a33"; //Staging
+	private static final String ACCOUNT_TOKEN = "acc_0fdf5aadda0c210f"; ////Staging
 
-	private EditText mPriceEditText, mCurrencyEditText, mDescriptionEditText, mPersonNameEditText, mCardEditText,
-			mCVVEditText, mExpireDateEditText;
+	private PaymentView mFieldHolder;
+	
+	private EditText mPriceEditText, mCurrencyEditText, mDescriptionEditText, mPersonNameEditText;
 	
 	private static final String CARD_DATA_KEY = "cardData";
 
@@ -41,15 +46,22 @@ public class MainActivity extends Activity {
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         CardFlight.getInstance().setApiTokenAndAccountToken(API_TOKEN, ACCOUNT_TOKEN);
-
+        CardFlight.getInstance().setLogging(true);
+        
 		mPriceEditText = (EditText) findViewById(R.id.priceEditText);
 		mPersonNameEditText = (EditText) findViewById(R.id.nameEditText);
-		mCardEditText = (EditText) findViewById(R.id.cardEditText);
-		mCVVEditText = (EditText) findViewById(R.id.cvvCodeEditText);
-		mExpireDateEditText = (EditText) findViewById(R.id.expireDateEditText);
+		mFieldHolder = (PaymentView) findViewById(R.id.cardEditText);
         mCurrencyEditText = (EditText) findViewById(R.id.currencyEditText);
         mDescriptionEditText = (EditText) findViewById(R.id.descriptionEditText);
 
+        mFieldHolder.setOnCardKeyedListener(new OnCardKeyedListener() {
+			
+			@Override
+			public void onCardKeyed(Card card) {
+				mCard = card;
+			}
+		});
+        
 		reader = new Reader(getApplicationContext(), new CardFlightDeviceHandler() {
 
 					@Override
@@ -208,17 +220,12 @@ public class MainActivity extends Activity {
 
 		mCard = null;
 		mPersonNameEditText.setText("");
-		mCardEditText.setText("");
-		mCVVEditText.setText("");
-		mExpireDateEditText.setText("");
+		mFieldHolder.resetFields();
 	}
 
 	private void fillFieldsWithData(Card cardData) {
 		mPersonNameEditText.setText(cardData.getName());
-		mCardEditText.setText(cardData.getCardNumber());
-		mCVVEditText.setText(cardData.getCVVCode());
-		mExpireDateEditText.setText(cardData.getExpirationMonth() + "/"
-				+ cardData.getExpirationYear());
+		mFieldHolder.setCardData(cardData);
 	}
 
 	@Override
