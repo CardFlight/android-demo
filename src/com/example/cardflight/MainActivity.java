@@ -18,7 +18,6 @@ import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
 import com.getcardflight.views.PaymentView;
-import com.getcardflight.views.deprecated.CustomView;
 
 public class MainActivity extends Activity {
 
@@ -178,12 +177,6 @@ public class MainActivity extends Activity {
 			return;
         }
 
-        // generate card object if custom manual entry
-        if (mCard == null)
-        {
-            mCard = CustomView.getInstance().generateCard();
-        }
-
 		// process payment
 
         String description = mDescriptionEditText.getText().toString();
@@ -213,7 +206,7 @@ public class MainActivity extends Activity {
                         resetFields();
 
                     }
-                });
+                }, getApplicationContext());
 	}
 
 	private void resetFields() {
