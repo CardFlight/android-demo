@@ -23,3 +23,7 @@ local.properties
 .classpath
 .project
 *.iml
+
+# Ignore gradle files
+.gradle/
+build/
