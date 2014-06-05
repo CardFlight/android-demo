@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <com.getcardflight.views.CardNumEditText
+        android:id="@+id/credit_card_no"
+        style="@style/CheckoutAddCardField"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_field_height"
+        android:layout_gravity="center_vertical"
+        android:hint="@string/card_mock"
+        android:maxLength="19"
+        />
+
+    <com.getcardflight.views.InterceptEditText
+        android:id="@+id/last_four_digits"
+        style="@style/CheckoutAddCardField"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/text_field_height"
+        android:layout_gravity="center_vertical"
+        android:editable="false"
+        android:focusable="false"
+        android:inputType="none"
+        android:maxLength="19"
+        android:visibility="gone" />
+
+</merge>

@@ -1,0 +1,9 @@
+<resources>
+
+	<!-- Default screen margins, per the Android Design guidelines. -->
+	<dimen name="activity_horizontal_margin">16dp</dimen>
+	<dimen name="activity_vertical_margin">16dp</dimen>
+	<dimen name="checkout_input_field_text_size">30sp</dimen>
+	<dimen name="text_field_height">60dp</dimen>
+	<dimen name="field_holder_margin">30dp</dimen>
+</resources>
