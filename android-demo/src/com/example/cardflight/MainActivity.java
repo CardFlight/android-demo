@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
     public void displaySerialNumber(View view) {
 
         String s = reader.serialNumber;
-        Toast.makeText(getApplicationContext(),s, 10).show();
+        Toast.makeText(getApplicationContext(),s, Toast.LENGTH_SHORT).show();
     }
 
 	public void processPayment(View view) {
