@@ -99,7 +99,7 @@
 
         <Button
             android:id="@+id/swipeCardButton"
-            android:layout_width="140dp"
+            android:layout_width="150dp"
             android:layout_height="@dimen/field_height"
             android:layout_below="@+id/cardEditText"
             android:layout_marginTop="@dimen/content_padding"
@@ -109,7 +109,7 @@
 
         <Button
             android:id="@+id/processPaymentButton"
-            android:layout_width="140dp"
+            android:layout_width="150dp"
             android:layout_height="@dimen/field_height"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/cardEditText"
@@ -119,12 +119,25 @@
             android:textSize="13sp" />
 
         <Button
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="@dimen/field_height"
             android:text="Serial Number"
             android:id="@+id/serialNumber"
+            android:layout_alignParentLeft="true"
             android:textSize="13sp"
             android:onClick="displaySerialNumber"
+            android:layout_marginTop="22dp"
+            android:layout_below="@+id/swipeCardButton"
+            android:layout_centerHorizontal="true" />
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="@dimen/field_height"
+            android:text="Tokenize Card"
+            android:id="@+id/tokenizeCard"
+            android:layout_alignParentRight="true"
+            android:textSize="13sp"
+            android:onClick="tokenizeCardMethod"
             android:layout_marginTop="22dp"
             android:layout_below="@+id/swipeCardButton"
             android:layout_centerHorizontal="true" />

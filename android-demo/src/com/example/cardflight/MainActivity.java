@@ -5,6 +5,7 @@ import java.util.HashMap;
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.getcardflight.interfaces.CardFlightDeviceHandler;
 import com.getcardflight.interfaces.CardFlightPaymentHandler;
+import com.getcardflight.interfaces.CardFlightTokenizationHandler;
 import com.getcardflight.interfaces.OnCardKeyedListener;
 import com.getcardflight.models.Card;
 import com.getcardflight.models.CardFlight;
@@ -20,17 +22,18 @@ import com.getcardflight.models.Reader;
 import com.getcardflight.views.PaymentView;
 
 public class MainActivity extends Activity {
+    private static final String TAG = MainActivity.class.getSimpleName();
 
 	private Charge charge;
     private Reader reader;
 	private Card mCard;
 
-//	private static final String API_TOKEN = "4fb831302debeb03128c5c23633a5b42";
-//	private static final String ACCOUNT_TOKEN = "c10aa9a847b55d87";
-	private static final String API_TOKEN = "0d86293deea388ce116c2fad60f71a33"; //Staging
-	private static final String ACCOUNT_TOKEN = "acc_0fdf5aadda0c210f"; ////Staging
+    //TODO Put your API & Account Tokens here
+    private static final String API_TOKEN = "YOUR_API_TOKEN";
+    private static final String ACCOUNT_TOKEN = "YOUR_ACCOUNT_TOKEN";
 
-	private PaymentView mFieldHolder;
+
+    private PaymentView mFieldHolder;
 	
 	private EditText mPriceEditText, mCurrencyEditText, mDescriptionEditText, mPersonNameEditText;
 	
@@ -164,18 +167,41 @@ public class MainActivity extends Activity {
 	}
 
     public void displaySerialNumber(View view) {
-
         String s = reader.serialNumber;
         Toast.makeText(getApplicationContext(),s, Toast.LENGTH_SHORT).show();
+    }
+
+    public void tokenizeCardMethod(View view){
+        if (mCard != null) {
+            mCard.tokenize(
+                    new CardFlightTokenizationHandler() {
+                        @Override
+                        public void tokenizationSuccessful(String s) {
+                            Log.d(TAG, "tokenizationSuccessful");
+                            Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void tokenizationFailed(String s) {
+                            Log.d(TAG, "tokenizationFailed");
+                            Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+                        }
+                    },
+                    getApplicationContext()
+            );
+        } else {
+            Toast.makeText(getApplicationContext(), "Unable to tokenize- no card present", Toast.LENGTH_SHORT).show();
+        }
     }
 
 	public void processPayment(View view) {
 
 		String price = mPriceEditText.getText().toString();
-		if (TextUtils.isEmpty(price))
-        {
+		if (TextUtils.isEmpty(price)){
+            Toast.makeText(getApplicationContext(), "Price cannot be empty", Toast.LENGTH_SHORT).show();
 			return;
         }
+        Log.d(TAG, "Processing payment of: " + price);
 
 		// process payment
 
@@ -187,26 +213,30 @@ public class MainActivity extends Activity {
         chargeDetailsHash.put(mCard.REQUEST_KEY_DESCRIPTION, description);
         chargeDetailsHash.put(mCard.REQUEST_KEY_AMOUNT, Double.valueOf(price));
 
-		mCard.chargeCard(chargeDetailsHash, new CardFlightPaymentHandler() {
+        if (mCard != null) {
+            mCard.chargeCard(chargeDetailsHash, new CardFlightPaymentHandler() {
 
-                    @Override
-                    public void transactionSuccessful(Charge charge) {
+                @Override
+                public void transactionSuccessful(Charge charge) {
 
-                        Toast.makeText(getApplicationContext(), "Transaction successful",
-                                Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Transaction successful",
+                            Toast.LENGTH_SHORT).show();
 
-                        resetFields();
-                    }
+                    resetFields();
+                }
 
-                    @Override
-                    public void transactionFailed(String error) {
-                        Toast.makeText(getApplicationContext(), error,
-                                Toast.LENGTH_SHORT).show();
+                @Override
+                public void transactionFailed(String error) {
+                    Toast.makeText(getApplicationContext(), error,
+                            Toast.LENGTH_SHORT).show();
 
-                        resetFields();
+                    resetFields();
 
-                    }
-                }, getApplicationContext());
+                }
+            }, getApplicationContext());
+        } else {
+            Toast.makeText(getApplicationContext(), "Unable to process payment- no card present", Toast.LENGTH_SHORT).show();
+        }
 	}
 
 	private void resetFields() {
@@ -226,7 +256,8 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 
 		// destroy cardflight instance
-		reader.destroy();
+        if (reader != null)
+		    reader.destroy();
 	}
 
 }
