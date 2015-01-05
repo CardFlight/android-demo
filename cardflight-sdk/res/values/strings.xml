@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="cardio_app_name">CardFlight</string>
+    <string name="cardio_name">Name:</string>
+    <string name="cardio_name_hint">NAME</string>
+    <string name="cardio_number_hint">1234 5678 1234 5678</string>
+    <string name="cardio_cvv_hint">1234</string>
+    <string name="cardio_expires_hint">MM / YYYY</string>
+    <string name="cardio_number">Number:</string>
+    <string name="cardio_cvv">CVV:</string>
+    <string name="cardio_expires">Expires:</string>
+    <string name="cardio_done">Done</string>
+    <string name="cardio_cancel">Cancel</string>
+    <string name="cardio_reset">Reset</string>
+    <string name="title_activity_manual_entry">ManualEntryActivity</string>
+
+	<string name="error_invalid_card_no">Please enter a valid card number</string>
+	<string name="expiration_field_desc">Credit Card Expiration Field</string>
+	<string name="expiration_field_hint">MM/YY</string>
+	<string name="card_mock">1234 5678 9012 3456</string>
+	<string name="credit_card_number_field_description">Credit Card Number Field</string>
+	<string name="_cvv_">" CVV "</string>
+    <string name="zip_code">" ZIP "</string>
+    <string name="bt_pair_instructions">Select the Bluetooth Reader from the list below</string>
+    <string name="bt_mag_reader_paired">Bluetooth Reader ready to be linked</string>
+    <string name="attempt_auto_connect">Attempting to automatically find and link the Bluetooth Reader.</string>
+    <string name="bluetooth_problems_prompt">If you\'re having problems connecting, try the resetting the Bluetooth Reader:</string>
+    <string name="bluetooth_help_one">Turn the Bluetooth Reader off. Do this by pressing the ON/OFF switch for several seconds until no lights are blinking</string>
+    <string name="bluetooth_help_two">Turn the Bluetooth Reader back on. Press and hold the Bluetooth reader\'s ON switch for 7 seconds or until you see a flashing, blue light</string>
+    <string name="bluetooth_wizard_welcome">Welcome to the Bluetooth reader linking wizard.</string>
+    <string name="bluetooth_wizzard_get_started">To get started, press and hold the Bluetooth reader\'s ON switch for 7 seconds or until you see a flashing, blue light.</string>
+    <string name="bluetooth_pair_instructions_two">If the device does not appear, be sure that the Bluetooth reader is turned ON.</string>
+    <string name="bluetooth_pair_instructions_one">Find and tap on the device that contains \'BT Mag\'. </string>
+    <string name="emptyList">- Searching for Readers -</string>
+
+</resources>

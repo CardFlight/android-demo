@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <com.getcardflight.views.CardNumHolder
+    android:id="@+id/card_num_holder"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/text_field_height"
+    android:layout_centerVertical="true"
+    android:layout_marginLeft="10dp"
+    android:layout_toRightOf="@+id/card_icon"
+    android:contentDescription="@string/credit_card_number_field_description" />
+    
+    <com.getcardflight.views.CardIcon
+    android:id="@+id/card_icon"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_centerVertical="true"
+    android:scaleType="centerInside"
+    android:layout_marginLeft="0dp"
+    android:src="@drawable/checkout_default_card" />
+    
+    <LinearLayout
+        android:id="@+id/extra_fields"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/text_field_height"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal" >
+        
+        
+        <com.getcardflight.views.ExpirationEditText
+        android:id="@+id/expiration"
+        style="@style/CheckoutAddCardField"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/text_field_height"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/standard_padding"
+        android:hint="@string/expiration_field_hint"
+        android:imeOptions="actionNext"
+        android:inputType="number"
+        android:maxLength="5"
+        android:color="@color/DKGRAY" />
+        
+        <com.getcardflight.views.CVVEditText
+        android:id="@+id/security_code"
+        style="@style/CheckoutAddCardField"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/text_field_height"
+        android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/standard_padding"
+        android:layout_marginRight="@dimen/standard_padding"
+        android:hint="@string/_cvv_"
+        android:inputType="number"
+        android:maxLength="3"
+        android:nextFocusRight="@null"
+        android:color="@color/DKGRAY" />
+        
+        <com.getcardflight.views.ZipCodeEditText
+        android:id="@+id/zip_code"
+        style="@style/CheckoutZipField"
+        android:layout_width="@dimen/zip_code_width"
+        android:layout_height="@dimen/text_field_height"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="center"
+        android:contentDescription="Zip Code Field"
+        android:hint="@string/zip_code"
+        android:imeOptions="actionDone"
+        android:maxLength="10"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
+        android:nextFocusRight="@null"
+        android:textSize="@dimen/checkout_input_field_text_size"
+        android:color="@color/DKGRAY" />
+        
+    </LinearLayout>
+    
+</merge>
