@@ -1,0 +1,470 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/content_padding"
+        android:animateLayoutChanges="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shuttle_reader_demo"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Insert the Shuttle Reader to get started."
+            android:textSize="14sp"
+            android:gravity="center_horizontal"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+
+        <Button
+            android:id="@+id/serialNumber"
+            style="@style/Button"
+            android:text="@string/serial_number" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reader Commands"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:gravity="center_horizontal"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_margin="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Status:"
+                android:textSize="17sp"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/reader_status"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:text="Not connected"
+                android:textColor="@color/warning"
+                android:textSize="18sp"
+                android:textAllCaps="true"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/autoConfigButton"
+            style="@style/Button"
+            android:text="@string/run_auto_config" />
+
+        <Button
+            android:id="@+id/swipeCardButton"
+            style="@style/Button"
+            android:layout_marginTop="@dimen/content_padding"
+            android:text="@string/swipe_card" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Payment View"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"/>
+
+        <com.getcardflight.views.PaymentView
+            android:id="@+id/cardEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:background="@drawable/text_field_bg"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal" />
+
+        <CheckBox
+            android:id="@+id/zip_code_switch"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enable Zip Code"/>
+
+        <Button
+            android:id="@+id/fetchZipCodeButton"
+            style="@style/Button"
+            android:layout_marginTop="@dimen/content_padding"
+            android:layout_marginBottom="@dimen/content_padding"
+            android:text="@string/fetch_zip_code" />
+
+        <Button
+            android:id="@+id/resetFieldsButton"
+            style="@style/Button"
+            android:layout_marginTop="@dimen/content_padding"
+            android:layout_marginBottom="@dimen/content_padding"
+            android:text="@string/reset_fields" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Card Information"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Type:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/card_type"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Card Type:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/card_number"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Last Four:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/card_last_four"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Zip Code:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/zip_code_field"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Card commands"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"/>
+
+        <Button
+            android:id="@+id/tokenizeCard"
+            style="@style/Button"
+            android:text="@string/test_tokenize" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Charge Information"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Token:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/charge_token"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Amount:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/charge_amount"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Captured:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/charge_captured"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Voided:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/charge_voided"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Refunded:"
+                android:textSize="17sp"
+                android:gravity="left"/>
+
+            <TextView
+                android:id="@+id/charge_refund"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:gravity="center_horizontal"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Charge Commands"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="end">
+
+            <RelativeLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/processPaymentButton"
+                    style="@style/Button"
+                    android:layout_centerInParent="true"
+                    android:text="@string/test_charge" />
+            </RelativeLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/translucent_black"/>
+
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="start">
+
+                <Button
+                    android:id="@+id/authorizeCard"
+                    style="@style/Button"
+                    android:text="@string/auth_card" />
+
+                <Button
+                    android:id="@+id/processCapture"
+                    style="@style/Button"
+                    android:layout_marginTop="@dimen/content_padding"
+                    android:text="@string/test_capture" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/voidCard"
+            style="@style/Button"
+            android:text="@string/void_charge" />
+
+        <Button
+            android:id="@+id/refundCard"
+            style="@style/Button"
+            android:text="@string/refund_charge" />
+
+    </LinearLayout>
+</ScrollView>

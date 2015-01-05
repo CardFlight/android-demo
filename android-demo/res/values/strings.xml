@@ -2,10 +2,10 @@
 
     <string name="app_name">CardFlight Demo</string>
     <string name="price">Price:</string>
-    <string name="swipe_card">Swipe Card</string>
+    <string name="swipe_card">Attempt Swipe</string>
     <string name="manual_entry">Manual Entry</string>
     <string name="send_swipe_data">Send swipe data</string>
-    <string name="process_payment">Process payment</string>
+    <string name="test_charge">Charge</string>
     <string name="person_name">Card Name:</string>
     <string name="person_name_hint">FIRSTNAME LASTNAME</string>
     <string name="credit_card_hint">1234 5678 1234 5678</string>
@@ -14,5 +14,22 @@
     <string name="expire_date_hint">MM / YYYY</string>
     <string name="currency">Currency:</string>
     <string name="description">Description:</string>
+    <string name="drawer_open">Select a Reader</string>
+    <string name="drawer_close">CardFlight</string>
+    <string name="splash_intro_text">Select an option from the Navigation Drawer to see the CardFlight SDK at work.</string>
+    <string name="carflight_sdk_sandbox">CardFlight SDK Demo</string>
+    <string name="shuttle_reader_demo">Shuttle Reader Demo</string>
+    <string name="test_tokenize">Tokenize</string>
+    <string name="serial_number">Serial Number</string>
+    <string name="quantity">Quantity:</string>
+    <string name="bluetooth_reader">Bluetooth Reader Demo</string>
+    <string name="reset_fields">Reset Fields</string>
+    <string name="reader_address">BTMag Address</string>
+    <string name="test_capture">Capture charge</string>
+    <string name="auth_card">Authorize card</string>
+    <string name="run_auto_config">Run AutoConfig</string>
+    <string name="void_charge">Void Charge</string>
+    <string name="refund_charge">Refund Charge</string>
+    <string name="fetch_zip_code">Get Zip Code</string>
 
 </resources>
