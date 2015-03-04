@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Theme colors -->
+    <color name="primary">#ff6699ff</color>
+    <color name="primary_off">#ff517acc</color>
+    <color name="primary_disabled">#ff334c7f</color>
+    <color name="primary_pressed">#ff517acc</color>
+
+    <color name="text_primary">#ffffff</color>
+    <color name="text_disabled">#c0c0c0</color>
+    <color name="text_pressed">#ff0088cc</color>
+
+    <color name="warning">#ff0c00</color>
+
+    <!-- Other colors-->
+    <color name="DKGRAY">#ff444444</color>
+    <color name="half_transparent">#BB000000</color>
+
+
+</resources>

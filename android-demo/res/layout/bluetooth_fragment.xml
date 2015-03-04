@@ -1,0 +1,141 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/content_padding" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bluetooth_reader"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bluetooth must be on and device must be paired with the Bluetooth reader."
+            android:textSize="14sp"
+            android:gravity="center_horizontal"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/bluetoothOptions"
+                style="@style/Button"
+                android:layout_weight="1"
+                android:text="Bluetooth is OFF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/connectToReader"
+                style="@style/Button"
+                android:layout_weight="1"
+                android:text="Connect to Reader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/readerAddress"
+                style="@style/Button"
+                android:layout_weight="1"
+                android:text="@string/reader_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/serialNumber"
+                style="@style/Button"
+                android:layout_weight="1"
+                android:text="@string/serial_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="2dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:id="@+id/reader_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Not connected"
+            android:textColor="@color/warning"
+            android:textSize="18sp"
+            android:layout_margin="10dp"
+            android:textAllCaps="true"
+            android:gravity="center_horizontal"/>
+
+        <com.getcardflight.views.PaymentView
+            android:id="@+id/cardEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:background="@drawable/text_field_bg"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:id="@+id/resetFieldsButton"
+            style="@style/Button"
+            android:layout_marginTop="@dimen/content_padding"
+            android:layout_marginBottom="@dimen/content_padding"
+            android:text="@string/reset_fields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/translucent_black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test CardFlight commands"
+            android:textSize="14sp"
+            android:gravity="center_horizontal"/>
+
+        <Button
+            android:id="@+id/tokenizeCard"
+            style="@style/Button"
+            android:text="@string/test_tokenize"
+            android:onClick="tokenizeCardMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/processPaymentButton"
+            style="@style/Button"
+            android:layout_marginTop="@dimen/content_padding"
+            android:text="@string/test_charge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</ScrollView>
