@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+
 import com.example.cardflight.R;
 import com.example.cardflight.Settings;
 import com.getcardflight.interfaces.*;
@@ -67,7 +68,7 @@ public class ShuttleFragment extends Fragment {
     private PaymentView mFieldHolder;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mContext = getActivity();
@@ -159,15 +160,19 @@ public class ShuttleFragment extends Fragment {
                 enableAutoconfigButton();
             }
 
-            @Override
-            public void readerTimeout() {
-                readerFailed = true;
-                Toast.makeText(getApplicationContext(),
-                        "Reader has timed out", Toast.LENGTH_SHORT)
-                        .show();
+            @Override public void readerTimeout() {
 
-                enableAutoconfigButton();
             }
+
+//            @Override
+//            public void readerTimeout() {
+//                readerFailed = true;
+//                Toast.makeText(getApplicationContext(),
+//                        "Reader has timed out", Toast.LENGTH_SHORT)
+//                        .show();
+//
+//                enableAutoconfigButton();
+//            }
 
         }, new CardFlightAutoConfigHandler() {
             @Override
@@ -193,14 +198,16 @@ public class ShuttleFragment extends Fragment {
 
             @Override
             public void onCardKeyed(Card card) {
-                mCard = card;
-                fillFieldsWithData(mCard);
+                if( card != null ) {
+                    mCard = card;
+                    fillFieldsWithData(mCard);
+                }
             }
         };
 
         // Create the listener that listens to when the PaymentView has been cleared and reset.
         // NOTE: This is not necessary and should be used to simply clear out any variables set.
-        onFieldResetListener = new OnFieldResetListener(){
+        onFieldResetListener = new OnFieldResetListener() {
             @Override
             public void onFieldReset() {
                 fieldsReset();
@@ -217,7 +224,7 @@ public class ShuttleFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView  = inflater.inflate(R.layout.shuttle_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.shuttle_fragment, container, false);
 
         mFieldHolder = (PaymentView) rootView.findViewById(R.id.cardEditText);
         // Set the CardKeyedListener and FieldResetListener here
@@ -268,7 +275,7 @@ public class ShuttleFragment extends Fragment {
         voidButton.setOnClickListener(buttonClickListener);
         refundButton.setOnClickListener(buttonClickListener);
 
-        if (readerIsConnected){
+        if (readerIsConnected) {
             readerConnected();
         } else {
             readerDisconnected();
@@ -282,7 +289,7 @@ public class ShuttleFragment extends Fragment {
         public void onClick(View v) {
             DialogFragment dialogFragment;
 
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.swipeCardButton:
                     launchSwipeEvent();
                     break;
@@ -385,10 +392,10 @@ public class ShuttleFragment extends Fragment {
         }
     };
 
-    private void enableZipCode(boolean enable){
+    private void enableZipCode(boolean enable) {
         mFieldHolder.enableZipCode(enable);
         zipCodeEnabled.setChecked(enable);
-        if (enable){
+        if (enable) {
             zipCodeButton.setVisibility(View.VISIBLE);
         } else {
             zipCodeButton.setVisibility(View.GONE);
@@ -402,10 +409,10 @@ public class ShuttleFragment extends Fragment {
 
     private void displaySerialNumber() {
         String s = reader.serialNumber;
-        Toast.makeText(getApplicationContext(),s, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 
-    private void tokenizeCardMethod(){
+    private void tokenizeCardMethod() {
         showToast("Tokenizing card...");
         if (mCard != null) {
             mCard.tokenize(
@@ -429,7 +436,7 @@ public class ShuttleFragment extends Fragment {
         }
     }
 
-    private void authorizeCard(double price){
+    private void authorizeCard(double price) {
         showToast("Authorizing card...");
         HashMap chargeDetailsHash = new HashMap();
         chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, price);
@@ -463,7 +470,7 @@ public class ShuttleFragment extends Fragment {
         }
     }
 
-    private void captureCharge(){
+    private void captureCharge() {
         showToast("Capturing charge...");
         if (mCharge != null) {
             Charge.processCapture(mCharge.getToken(), mCharge.getAmount().doubleValue(), new CardFlightCaptureHandler() {
@@ -486,7 +493,7 @@ public class ShuttleFragment extends Fragment {
     }
 
     private void chargeCard(String price) {
-        if (TextUtils.isEmpty(price)){
+        if (TextUtils.isEmpty(price)) {
             showToast("Price cannot be empty");
             return;
         }
@@ -519,7 +526,7 @@ public class ShuttleFragment extends Fragment {
         }
     }
 
-    private void voidCharge(){
+    private void voidCharge() {
         showToast("Voiding charge...");
         if (mCharge != null) {
             Charge.processVoid(mCharge.getToken(), new CardFlightPaymentHandler() {
@@ -542,7 +549,7 @@ public class ShuttleFragment extends Fragment {
         }
     }
 
-    private void refundCharge(double refund){
+    private void refundCharge(double refund) {
         showToast("Refunding charge...");
         if (mCharge != null) {
             Charge.processRefund(mCharge.getToken(), refund, new CardFlightPaymentHandler() {
@@ -566,7 +573,7 @@ public class ShuttleFragment extends Fragment {
     }
 
 
-    private void readerConnected(){
+    private void readerConnected() {
         readerIsConnected = true;
         readerStatus.setText("Reader connected");
         swipeCardButton.setEnabled(true);
@@ -574,7 +581,7 @@ public class ShuttleFragment extends Fragment {
         autoConfigButton.setEnabled(false);
     }
 
-    private void readerDisconnected(){
+    private void readerDisconnected() {
         readerIsConnected = false;
         readerStatus.setText("Reader not connected");
         swipeCardButton.setEnabled(false);
@@ -583,19 +590,19 @@ public class ShuttleFragment extends Fragment {
         fieldsReset();
     }
 
-    private void chargePresent(){
+    private void chargePresent() {
         captureChargeButton.setEnabled(true);
         chargeToken.setText(mCharge.getToken());
         chargeAmount.setText("$" + mCharge.getAmount());
     }
 
-    private void chargeUpdated(){
+    private void chargeUpdated() {
         chargeCaptured.setText(String.valueOf(mCharge.isCaputred()));
         chargeVoided.setText(String.valueOf(mCharge.isVoided()));
         chargeRefunded.setText(String.format("%s | $%s", mCharge.isRefunded(),
                 mCharge.isRefunded() ? mCharge.getAmountRefunded().toString() : "-.--"));
 
-        if (mCharge.isCaputred() && !mCharge.isVoided() && !mCharge.isRefunded()){
+        if (mCharge.isCaputred() && !mCharge.isVoided() && !mCharge.isRefunded()) {
             processPaymentButton.setEnabled(false);
             captureChargeButton.setEnabled(false);
             authorizeCardButton.setEnabled(false);
@@ -616,7 +623,7 @@ public class ShuttleFragment extends Fragment {
         }
     }
 
-    private void chargeCleared(){
+    private void chargeCleared() {
         captureChargeButton.setEnabled(false);
         voidButton.setEnabled(false);
         refundButton.setEnabled(false);
@@ -629,7 +636,8 @@ public class ShuttleFragment extends Fragment {
         chargeRefunded.setText("---");
     }
 
-    private void setCardPresent(){
+    private void setCardPresent() {
+
         cardNumber.setText(mCard.getCardNumber());
         cardLastFour.setText(mCard.getLast4());
         cardType.setText(mCard.getType());
@@ -657,7 +665,7 @@ public class ShuttleFragment extends Fragment {
         setCardPresent();
     }
 
-    private void enableAutoconfigButton(){
+    private void enableAutoconfigButton() {
         autoConfigButton.setEnabled(true);
     }
 
@@ -670,7 +678,7 @@ public class ShuttleFragment extends Fragment {
             reader.destroy();
     }
 
-    private Context getApplicationContext(){
+    private Context getApplicationContext() {
         return mContext.getApplicationContext();
     }
 
@@ -788,7 +796,7 @@ public class ShuttleFragment extends Fragment {
         return builder.create();
     }
 
-    private void showToast(String text){
+    private void showToast(String text) {
         Toast t = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
         t.setGravity(Gravity.CENTER, 0, 0);
         t.show();
