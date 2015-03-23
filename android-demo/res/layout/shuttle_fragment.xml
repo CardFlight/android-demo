@@ -13,7 +13,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/shuttle_reader_demo"
+            android:text="@string/cardflight_reader_demo"
             android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center_horizontal"/>
@@ -28,7 +28,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/translucent_black"/>
+            android:background="@color/cardflight_translucent_black"/>
 
 
         <Button
@@ -39,7 +39,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/translucent_black"/>
+            android:background="@color/cardflight_translucent_black"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -90,7 +90,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/translucent_black"/>
+            android:background="@color/cardflight_translucent_black"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -133,7 +133,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/translucent_black"/>
+            android:background="@color/cardflight_translucent_black"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -243,7 +243,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/translucent_black"/>
+            android:background="@color/cardflight_translucent_black"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -260,7 +260,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/translucent_black"/>
+            android:background="@color/cardflight_translucent_black"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -401,7 +401,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/translucent_black"/>
+            android:background="@color/cardflight_translucent_black"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -434,7 +434,7 @@
                 android:layout_width="1dp"
                 android:layout_height="80dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/translucent_black"/>
+                android:background="@color/cardflight_translucent_black"/>
 
             <LinearLayout
                 android:layout_weight="1"

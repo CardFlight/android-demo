@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.example.cardflight.R;
+import com.getcardflight.models.CardFlight;
 
 /**
  * Created by pcedrowski on 8/26/14.
@@ -43,13 +44,8 @@ public class SplashFragment extends Fragment {
         String sdkVersion;
         String androidVersion;
 
-        try {
-            PackageInfo pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
-            sdkVersion = String.format("SDK %s", pInfo.versionName);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            sdkVersion = "UNKNOWN";
-        }
+        sdkVersion = String.format("SDK %s", CardFlight.getVersion());
+
         androidVersion = String.format("Android %s", Build.VERSION.RELEASE);
 
         sdkVersionText.setText(sdkVersion);

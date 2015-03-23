@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
 
-        mDrawerOptions = new String[]{"Home", "Shuttle Reader"};
+        mDrawerOptions = new String[]{"Home", "CardFlight Reader"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

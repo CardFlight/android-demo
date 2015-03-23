@@ -18,7 +18,7 @@
     <string name="drawer_close">CardFlight</string>
     <string name="splash_intro_text">Select an option from the Navigation Drawer to see the CardFlight SDK at work.</string>
     <string name="carflight_sdk_sandbox">CardFlight SDK Demo</string>
-    <string name="shuttle_reader_demo">Shuttle Reader Demo</string>
+    <string name="cardflight_reader_demo">CardFlight Reader Demo</string>
     <string name="test_tokenize">Tokenize</string>
     <string name="serial_number">Serial Number</string>
     <string name="quantity">Quantity:</string>

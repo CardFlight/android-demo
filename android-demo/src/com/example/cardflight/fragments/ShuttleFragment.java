@@ -10,20 +10,34 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cardflight.R;
 import com.example.cardflight.Settings;
-import com.getcardflight.interfaces.*;
+import com.getcardflight.interfaces.CardFlightAuthHandler;
+import com.getcardflight.interfaces.CardFlightAutoConfigHandler;
+import com.getcardflight.interfaces.CardFlightCaptureHandler;
+import com.getcardflight.interfaces.CardFlightDeviceHandler;
+import com.getcardflight.interfaces.CardFlightPaymentHandler;
+import com.getcardflight.interfaces.CardFlightTokenizationHandler;
+import com.getcardflight.interfaces.OnCardKeyedListener;
+import com.getcardflight.interfaces.OnFieldResetListener;
 import com.getcardflight.models.Card;
 import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
 import com.getcardflight.views.PaymentView;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 
 /**
@@ -339,7 +353,7 @@ public class ShuttleFragment extends Fragment {
 
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return makeAuthroizeDialog();
+                            return makeAuthorizeDialog();
                         }
                     };
                     dialogFragment.setRetainInstance(true);
@@ -408,24 +422,24 @@ public class ShuttleFragment extends Fragment {
     }
 
     private void displaySerialNumber() {
-        String s = reader.serialNumber;
+        String s = Reader.serialNumber;
         Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
     }
 
     private void tokenizeCardMethod() {
-        showToast("Tokenizing card...");
+        showToast("Tokenize card...");
         if (mCard != null) {
             mCard.tokenize(
                     new CardFlightTokenizationHandler() {
                         @Override
                         public void tokenizationSuccessful(String s) {
-                            Log.d(TAG, "tokenizationSuccessful");
+                            Log.d(TAG, "Tokenization Successful");
                             showToast(s);
                         }
 
                         @Override
                         public void tokenizationFailed(String s) {
-                            Log.d(TAG, "tokenizationFailed");
+                            Log.d(TAG, "Tokenization Failed");
                             showToast(s);
                         }
                     },
@@ -500,7 +514,7 @@ public class ShuttleFragment extends Fragment {
         Log.d(TAG, "Processing payment of: " + price);
 
         HashMap chargeDetailsHash = new HashMap();
-        chargeDetailsHash.put(mCard.REQUEST_KEY_AMOUNT, Double.valueOf(price));
+        chargeDetailsHash.put(Card.REQUEST_KEY_AMOUNT, Double.valueOf(price));
 
         if (mCard != null) {
             mCard.chargeCard(chargeDetailsHash, new CardFlightPaymentHandler() {
@@ -722,7 +736,7 @@ public class ShuttleFragment extends Fragment {
         return builder.create();
     }
 
-    private Dialog makeAuthroizeDialog() {
+    private Dialog makeAuthorizeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         View editView = View.inflate(mContext, R.layout.payment_dialog, null);
