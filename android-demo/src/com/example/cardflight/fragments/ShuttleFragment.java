@@ -146,47 +146,17 @@ public class ShuttleFragment extends Fragment {
                 fillFieldsWithData(card);
             }
 
-            @Override
-            public void deviceSwipeFailed() {
+            @Override public void readerFail(String errorMessage, int errorCode) {
                 readerFailed = true;
+
                 Toast.makeText(getApplicationContext(),
-                        "Device swipe failed", Toast.LENGTH_SHORT)
+                        errorMessage, Toast.LENGTH_SHORT)
                         .show();
 
+                if( errorCode == 601){
+                    enableAutoconfigButton();
+                }
             }
-
-            @Override
-            public void deviceSwipeTimeout() {
-                readerFailed = true;
-                Toast.makeText(getApplicationContext(),
-                        "Device swipe time out", Toast.LENGTH_SHORT)
-                        .show();
-
-            }
-
-            @Override
-            public void deviceNotSupported() {
-                readerFailed = true;
-                Toast.makeText(getApplicationContext(),
-                        "Device not supported", Toast.LENGTH_SHORT)
-                        .show();
-
-                enableAutoconfigButton();
-            }
-
-            @Override public void readerTimeout() {
-
-            }
-
-//            @Override
-//            public void readerTimeout() {
-//                readerFailed = true;
-//                Toast.makeText(getApplicationContext(),
-//                        "Reader has timed out", Toast.LENGTH_SHORT)
-//                        .show();
-//
-//                enableAutoconfigButton();
-//            }
 
         }, new CardFlightAutoConfigHandler() {
             @Override
@@ -438,9 +408,9 @@ public class ShuttleFragment extends Fragment {
                         }
 
                         @Override
-                        public void tokenizationFailed(String s) {
-                            Log.d(TAG, "Tokenization Failed");
-                            showToast(s);
+                        public void tokenizationFailed(String errorMessage, int errorCode) {
+                            Log.d(TAG, errorMessage);
+                            showToast(errorMessage);
                         }
                     },
                     getApplicationContext()
@@ -471,10 +441,9 @@ public class ShuttleFragment extends Fragment {
                             showToast("metadata: " + newMap.get("Test"));
                         }
 
-                        @Override
-                        public void authFailed(String s) {
-                            Log.d(TAG, "Card authorize failed");
-                            showToast(s);
+                        @Override public void authFailed(String errorMessage, int errorCode) {
+                            Log.d(TAG, errorMessage);
+                            showToast(errorMessage);
                         }
                     },
                     getApplicationContext()
@@ -496,9 +465,9 @@ public class ShuttleFragment extends Fragment {
                     chargeUpdated();
                 }
 
-                @Override
-                public void captureFailed(String error) {
-                    showToast(error);
+                @Override public void captureFailed(String errorMessage, int errorCode) {
+                    Log.d(TAG, errorMessage);
+                    showToast(errorMessage);
                 }
             });
         } else {
@@ -529,10 +498,9 @@ public class ShuttleFragment extends Fragment {
                     chargeUpdated();
                 }
 
-                @Override
-                public void transactionFailed(String error) {
-                    Toast.makeText(getApplicationContext(), error,
-                            Toast.LENGTH_SHORT).show();
+                @Override public void transactionFailed(String errorMessage, int errorCode) {
+                    Log.d(TAG, errorMessage);
+                    showToast(errorMessage);
                 }
             }, getApplicationContext());
         } else {
@@ -552,10 +520,9 @@ public class ShuttleFragment extends Fragment {
                     chargeUpdated();
                 }
 
-                @Override
-                public void transactionFailed(String error) {
-                    showToast(error);
-
+                @Override public void transactionFailed(String errorMessage, int errorCode) {
+                    Log.d(TAG, errorMessage);
+                    showToast(errorMessage);
                 }
             });
         } else {
@@ -575,10 +542,9 @@ public class ShuttleFragment extends Fragment {
                     chargeUpdated();
                 }
 
-                @Override
-                public void transactionFailed(String error) {
-                    showToast(error);
-
+                @Override public void transactionFailed(String errorMessage, int errorCode) {
+                    Log.d(TAG, errorMessage);
+                    showToast(errorMessage);
                 }
             });
         } else {
