@@ -14,7 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.example.cardflight.R;
-import com.example.cardflight.fragments.ShuttleFragment;
+import com.example.cardflight.fragments.ReaderDemoFragment;
 import com.example.cardflight.fragments.SplashFragment;
 
 public class MainActivity extends Activity {
@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
     private CharSequence mTitle;
 
     private SplashFragment splashFragment;
-    private ShuttleFragment shuttleFragment;
+    private ReaderDemoFragment readerDemoFragment;
     private Fragment fragment;
     private int drawerPosition = 0;
 
@@ -149,9 +149,9 @@ public class MainActivity extends Activity {
                 break;
 
             case 1:
-                if (shuttleFragment == null)
-                    shuttleFragment = new ShuttleFragment();
-                fragment = shuttleFragment;
+                if (readerDemoFragment == null)
+                    readerDemoFragment = new ReaderDemoFragment();
+                fragment = readerDemoFragment;
                 drawerPosition = 1;
                 break;
 

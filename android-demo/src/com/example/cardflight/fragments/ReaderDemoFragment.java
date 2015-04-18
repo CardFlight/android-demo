@@ -43,13 +43,11 @@ import java.util.HashMap;
 /**
  * Created by pcedrowski on 8/25/14.
  */
-public class ShuttleFragment extends Fragment {
-    private static final String TAG = ShuttleFragment.class.getSimpleName();
+public class ReaderDemoFragment extends Fragment {
+    private static final String TAG = ReaderDemoFragment.class.getSimpleName();
     private Context mContext;
 
     private boolean readerIsConnected;
-    private boolean readerFailed;
-    private boolean swipedCard;
 
     private Button swipeCardButton;
     private Button processPaymentButton;
@@ -107,7 +105,6 @@ public class ShuttleFragment extends Fragment {
 
             @Override
             public void readerIsAttached() {
-                readerFailed = false;
                 Toast.makeText(getApplicationContext(),
                         "Device connected", Toast.LENGTH_SHORT).show();
 
@@ -147,13 +144,12 @@ public class ShuttleFragment extends Fragment {
             }
 
             @Override public void readerFail(String errorMessage, int errorCode) {
-                readerFailed = true;
 
                 Toast.makeText(getApplicationContext(),
                         errorMessage, Toast.LENGTH_SHORT)
                         .show();
 
-                if( errorCode == 601){
+                if( errorCode == 464){ // device not supported
                     enableAutoconfigButton();
                 }
             }
@@ -208,7 +204,7 @@ public class ShuttleFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.shuttle_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.reader_demo_fragment, container, false);
 
         mFieldHolder = (PaymentView) rootView.findViewById(R.id.cardEditText);
         // Set the CardKeyedListener and FieldResetListener here
