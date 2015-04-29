@@ -32,4 +32,10 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
+    defaultConfig {
+        versionCode 10
+        versionName '2.0.1'
+    }
+    productFlavors {
+    }
 }

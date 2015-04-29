@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.cardflight.BuildConfig;
 import com.example.cardflight.R;
 import com.getcardflight.models.CardFlight;
 
@@ -19,6 +21,7 @@ public class SplashFragment extends Fragment {
 
     private TextView sdkVersionText;
     private TextView androidOsText;
+    private TextView demoVersionText;
 
 
     @Override
@@ -34,6 +37,7 @@ public class SplashFragment extends Fragment {
 
         sdkVersionText = (TextView) rootView.findViewById(R.id.sdk_version_text);
         androidOsText = (TextView) rootView.findViewById(R.id.android_version_text);
+        demoVersionText = (TextView) rootView.findViewById(R.id.demo_version_text);
 
         setSplashContent();
 
@@ -41,14 +45,12 @@ public class SplashFragment extends Fragment {
     }
 
     private void setSplashContent(){
-        String sdkVersion;
-        String androidVersion;
-
-        sdkVersion = String.format("SDK %s", CardFlight.getVersion());
-
-        androidVersion = String.format("Android %s", Build.VERSION.RELEASE);
+        String sdkVersion = String.format("CardFlight SDK %s", CardFlight.getVersion());
+        String androidVersion = String.format("Android %s", Build.VERSION.RELEASE);
+        String demoVersion = "Demo version " + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")";
 
         sdkVersionText.setText(sdkVersion);
         androidOsText.setText(androidVersion);
+        demoVersionText.setText(demoVersion);
     }
 }
