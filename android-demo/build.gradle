@@ -33,8 +33,8 @@ android {
         release.setRoot('build-types/release')
     }
     defaultConfig {
-        versionCode 10
-        versionName '2.0.1'
+        versionCode 11
+        versionName '2.0.2'
     }
     productFlavors {
     }
