@@ -650,8 +650,10 @@ public class ReaderDemoFragment extends Fragment {
         super.onDestroy();
 
         // destroy cardflight instance
-        if (reader != null)
-            reader.destroy();
+        if (reader != null) {
+            reader.StopReader();
+            reader = null;
+        }
     }
 
     private Context getApplicationContext() {
