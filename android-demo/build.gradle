@@ -20,6 +20,13 @@ android {
             assets.srcDirs = ['assets']
         }
 
+  defaultConfig {
+        versionCode 10
+        versionName '2.0.3'
+    }
+    productFlavors {
+    }
+
         // Move the tests to tests/java, tests/res, etc...
         instrumentTest.setRoot('tests')
 
@@ -31,11 +38,5 @@ android {
         // by a similar customization.
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
-    }
-    defaultConfig {
-        versionCode 11
-        versionName '2.0.2'
-    }
-    productFlavors {
     }
 }
