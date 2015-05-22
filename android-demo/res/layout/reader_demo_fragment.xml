@@ -257,6 +257,12 @@
             android:id="@+id/tokenizeCard"
             style="@style/Button"
             android:text="@string/test_tokenize" />
+
+        <Button
+            android:id="@+id/decryptButton"
+            style="@style/Button"
+            android:text="@string/test_decrypt" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"

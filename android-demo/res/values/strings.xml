@@ -31,5 +31,6 @@
     <string name="void_charge">Void Charge</string>
     <string name="refund_charge">Refund Charge</string>
     <string name="fetch_zip_code">Get Zip Code</string>
+    <string name="test_decrypt">Decrypt</string>
 
 </resources>

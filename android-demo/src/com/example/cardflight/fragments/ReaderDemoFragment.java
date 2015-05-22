@@ -27,6 +27,7 @@ import com.example.cardflight.Settings;
 import com.getcardflight.interfaces.CardFlightAuthHandler;
 import com.getcardflight.interfaces.CardFlightAutoConfigHandler;
 import com.getcardflight.interfaces.CardFlightCaptureHandler;
+import com.getcardflight.interfaces.CardFlightDecryptHandler;
 import com.getcardflight.interfaces.CardFlightDeviceHandler;
 import com.getcardflight.interfaces.CardFlightPaymentHandler;
 import com.getcardflight.interfaces.CardFlightTokenizationHandler;
@@ -37,6 +38,8 @@ import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
 import com.getcardflight.views.PaymentView;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
@@ -60,6 +63,7 @@ public class ReaderDemoFragment extends Fragment {
     private Button zipCodeButton;
     private Button voidButton;
     private Button refundButton;
+    private Button decryptButton;
     private TextView readerStatus;
     private TextView cardNumber;
     private TextView cardType;
@@ -218,6 +222,7 @@ public class ReaderDemoFragment extends Fragment {
         resetFieldsButton = (Button) rootView.findViewById(R.id.resetFieldsButton);
         authorizeCardButton = (Button) rootView.findViewById(R.id.authorizeCard);
         captureChargeButton = (Button) rootView.findViewById(R.id.processCapture);
+        decryptButton = (Button) rootView.findViewById(R.id.decryptButton);
         autoConfigButton = (Button) rootView.findViewById(R.id.autoConfigButton);
         zipCodeButton = (Button) rootView.findViewById(R.id.fetchZipCodeButton);
         voidButton = (Button) rootView.findViewById(R.id.voidCard);
@@ -254,6 +259,7 @@ public class ReaderDemoFragment extends Fragment {
         zipCodeButton.setOnClickListener(buttonClickListener);
         voidButton.setOnClickListener(buttonClickListener);
         refundButton.setOnClickListener(buttonClickListener);
+        decryptButton.setOnClickListener(buttonClickListener);
 
         if (readerIsConnected) {
             readerConnected();
@@ -365,7 +371,9 @@ public class ReaderDemoFragment extends Fragment {
                         showToast("No card is present");
                     }
                     break;
-
+                case R.id.decryptButton:
+                    decryptCardMethod();
+                    break;
                 default:
                     break;
             }
@@ -413,6 +421,28 @@ public class ReaderDemoFragment extends Fragment {
             );
         } else {
             showToast("Unable to tokenize- no card present");
+        }
+    }
+
+    private void decryptCardMethod() {
+        if (mCard != null) {
+
+            mCard.decryptPrivateLabel(mContext, new CardFlightDecryptHandler() {
+
+                @Override public void decryptSuccess(HashMap decryptData) {
+                    Toast.makeText(getApplicationContext(),
+                            "Decrypt completed: " + decryptData.toString(), Toast.LENGTH_LONG)
+                            .show();
+                }
+
+                @Override public void decryptFailed(String errorMessage, int errorCode) {
+                    Toast.makeText(getApplicationContext(),
+                            "Decrypt Failed : " + errorMessage, Toast.LENGTH_SHORT)
+                            .show();
+                }
+            });
+        } else {
+            showToast("No card is present");
         }
     }
 
@@ -621,6 +651,7 @@ public class ReaderDemoFragment extends Fragment {
 
         processPaymentButton.setEnabled(true);
         tokenizeCardButton.setEnabled(true);
+        decryptButton.setEnabled(true);
         authorizeCardButton.setEnabled(true);
     }
 
@@ -632,6 +663,7 @@ public class ReaderDemoFragment extends Fragment {
 
         processPaymentButton.setEnabled(false);
         tokenizeCardButton.setEnabled(false);
+        decryptButton.setEnabled(false);
         authorizeCardButton.setEnabled(false);
         chargeCleared();
     }
