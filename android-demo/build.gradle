@@ -23,7 +23,7 @@ android {
 
   defaultConfig {
         versionCode 10
-        versionName '2.0.4'
+        versionName '2.0.5'
     }
     productFlavors {
     }
