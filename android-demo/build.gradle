@@ -1,13 +1,13 @@
 apply plugin: 'android'
 
 dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':cardflight-sdk')
-    compile 'com.android.support:support-v4:22.1.1'
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    compileSdkVersion 22
+    buildToolsVersion "21.1.2"
 
     sourceSets {
         main {
@@ -22,7 +22,7 @@ android {
 
   defaultConfig {
         versionCode 10
-        versionName '2.0.6'
+        versionName '2.0.7'
     }
     productFlavors {
     }
