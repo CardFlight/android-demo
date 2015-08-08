@@ -32,5 +32,6 @@
     <string name="refund_charge">Refund Charge</string>
     <string name="fetch_zip_code">Get Zip Code</string>
     <string name="test_decrypt">Decrypt</string>
+    <string name="card_holder_name">Card holder name:</string>
 
 </resources>

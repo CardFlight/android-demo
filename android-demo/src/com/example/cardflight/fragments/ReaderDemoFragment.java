@@ -74,6 +74,7 @@ public class ReaderDemoFragment extends Fragment {
     private TextView chargeVoided;
     private TextView chargeRefunded;
     private TextView zipCode;
+    private TextView cardHolderName;
     private CheckBox zipCodeEnabled;
 
     private Reader reader = null;
@@ -228,6 +229,7 @@ public class ReaderDemoFragment extends Fragment {
         voidButton = (Button) rootView.findViewById(R.id.voidCard);
         refundButton = (Button) rootView.findViewById(R.id.refundCard);
         readerStatus = (TextView) rootView.findViewById(R.id.reader_status);
+        cardHolderName = (TextView) rootView.findViewById(R.id.cardHolderName);
 
         cardNumber = (TextView) rootView.findViewById(R.id.card_number);
         cardType = (TextView) rootView.findViewById(R.id.card_type);
@@ -648,6 +650,7 @@ public class ReaderDemoFragment extends Fragment {
         cardLastFour.setText(mCard.getLast4());
         cardType.setText(mCard.getType());
         zipCode.setText(mCard.getZipCode());
+        cardHolderName.setText(mCard.getName());
 
         processPaymentButton.setEnabled(true);
         tokenizeCardButton.setEnabled(true);
@@ -660,6 +663,7 @@ public class ReaderDemoFragment extends Fragment {
         cardNumber.setText("----");
         cardLastFour.setText("----");
         cardType.setText("----");
+        cardHolderName.setText("----");
 
         processPaymentButton.setEnabled(false);
         tokenizeCardButton.setEnabled(false);

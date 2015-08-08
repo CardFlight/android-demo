@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.cardflight"
     android:versionCode="3"
-    android:versionName="2.0.1" >
+    android:versionName="2.0.11" >
 
     <uses-sdk
         android:minSdkVersion="15"
