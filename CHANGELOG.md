@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 2.0.11 *(2015-08-11)*
+----------------------------
+
+ * Update CardFlight SDK 2.26
+ * New: Card holder name presentation from Card object.
+
+ 
 Version 2.0.9 *(2015-07-24)*
 ----------------------------
 
