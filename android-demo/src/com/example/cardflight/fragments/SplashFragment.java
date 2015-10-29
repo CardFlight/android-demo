@@ -1,8 +1,6 @@
 package com.example.cardflight.fragments;
 
 import android.app.Fragment;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +13,7 @@ import com.example.cardflight.R;
 import com.getcardflight.models.CardFlight;
 
 /**
- * Created by pcedrowski on 8/26/14.
+ * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
 public class SplashFragment extends Fragment {
 
@@ -44,10 +42,10 @@ public class SplashFragment extends Fragment {
         return rootView;
     }
 
-    private void setSplashContent(){
-        String sdkVersion = String.format("CardFlight SDK %s", CardFlight.getVersion());
+    private void setSplashContent() {
+        String sdkVersion = String.format("CardFlight SDK %s (%d)", CardFlight.getVersion(), CardFlight.getBuild());
         String androidVersion = String.format("Android %s", Build.VERSION.RELEASE);
-        String demoVersion = "Demo version " + BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")";
+        String demoVersion = String.format("Demo version %s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
 
         sdkVersionText.setText(sdkVersion);
         androidOsText.setText(androidVersion);

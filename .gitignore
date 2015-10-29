@@ -27,4 +27,4 @@ local.properties
 # Ignore gradle files
 .gradle/
 build/
-.DS_Store
+./*/.DS_Store

@@ -33,18 +33,20 @@ import com.getcardflight.interfaces.CardFlightPaymentHandler;
 import com.getcardflight.interfaces.CardFlightTokenizationHandler;
 import com.getcardflight.interfaces.OnCardKeyedListener;
 import com.getcardflight.interfaces.OnFieldResetListener;
+import com.getcardflight.models.CFEMVMessage;
 import com.getcardflight.models.Card;
 import com.getcardflight.models.CardFlight;
+import com.getcardflight.models.CardFlightError;
+import com.getcardflight.models.CardFlightErrors;
 import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
 import com.getcardflight.views.PaymentView;
 
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by pcedrowski on 8/25/14.
+ * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
 public class ReaderDemoFragment extends Fragment {
     private static final String TAG = ReaderDemoFragment.class.getSimpleName();
@@ -103,17 +105,98 @@ public class ReaderDemoFragment extends Fragment {
 
             @Override
             public void readerIsConnecting() {
-                Toast.makeText(getApplicationContext(),
-                        "Device connecting", Toast.LENGTH_SHORT).show();
+                readerConnecting();
+            }
 
+            @Override
+            public void readerIsConnected(boolean b, CardFlightError cardFlightError) {
+                if (cardFlightError == null) {
+                    readerConnected(true);
+                } else {
+                    showToast(cardFlightError.getMessage());
+                }
+            }
+
+            @Override
+            public void readerSwipeDetected() {
+                showToast("Swipe detected");
+            }
+
+            @Override
+            public void emvTransactionResult(Charge charge, boolean b, CFEMVMessage cfemvMessage) {
+                if (charge != null) {
+                    if (b) {
+                        showToast("Approved - needs signature");
+                    } else {
+                        showToast("Approved - no CVM");
+                    }
+                } else {
+                    showToast("Message: " + cfemvMessage.getMessage());
+                }
+            }
+
+            @Override
+            public void emvRequestApplicationSelection(ArrayList arrayList) {
+                showToast("Multiple AIDs available");
+            }
+
+            @Override
+            public void emvMessage(CFEMVMessage cfemvMessage) {
+                showToast("Message: " + cfemvMessage.getMessage());
+            }
+
+            @Override
+            public void emvCardResponse(String s, String s1) {
+                showToast("Charge " + s1 + " ending in " + s + "?");
+            }
+
+            @Override
+            public void emvErrorResponse(CardFlightError cardFlightError) {
+                showToast("Error: " + cardFlightError.getMessage());
+            }
+
+            @Override
+            public void emvAmountRequested() {
+                showToast("Amount requested");
+            }
+
+            @Override
+            public void readerBatteryLow() {
+                showToast("Reader battery low");
+            }
+
+            @Override
+            public void emvCardDipped() {
+                showToast("Card dipped");
+            }
+
+            @Override
+            public void emvCardRemoved() {
+                showToast("Card removed");
+            }
+
+            @Override
+            public void readerCardResponse(Card card, CardFlightError cardFlightError) {
+                if (cardFlightError == null) {
+                    Toast.makeText(getApplicationContext(),
+                            "Device swipe completed", Toast.LENGTH_SHORT)
+                            .show();
+
+                    mCard = card;
+
+                    fillFieldsWithData(card);
+                } else {
+                    showToast("Error: " + cardFlightError.getMessage());
+
+                    if (cardFlightError == CardFlightErrors.DEVICE_NOT_SUPPORTED.getError()) {
+                        enableAutoconfigButton();
+                    }
+                }
             }
 
             @Override
             public void readerIsAttached() {
-                Toast.makeText(getApplicationContext(),
-                        "Device connected", Toast.LENGTH_SHORT).show();
-
-                readerConnected();
+                readerConnected(true);
             }
 
             @Override
@@ -127,36 +210,23 @@ public class ReaderDemoFragment extends Fragment {
             }
 
             @Override
-            public void deviceBeginSwipe() {
-                // TODO Auto-generated method stub
-                Toast.makeText(getApplicationContext(),
-                        "Device begin swipe", Toast.LENGTH_SHORT)
-                        .show();
-
+            public void readerSwipeDidCancel() {
+                showToast("Swipe cancelled");
             }
 
             @Override
-            public void readerCardResponse(Card card) {
-                // TODO Auto-generated method stub
-
-                Toast.makeText(getApplicationContext(),
-                        "Device swipe completed", Toast.LENGTH_SHORT)
-                        .show();
-
-                mCard = card;
-
-                fillFieldsWithData(card);
+            public void readerNotDetected() {
+                readerDisconnected();
             }
 
-            @Override public void readerFail(String errorMessage, int errorCode) {
+            @Override
+            public void deviceBeginSwipe() {
+                // Deprecated in SDK v3.0.4
+            }
 
-                Toast.makeText(getApplicationContext(),
-                        errorMessage, Toast.LENGTH_SHORT)
-                        .show();
-
-                if( errorCode == 464){ // device not supported
-                    enableAutoconfigButton();
-                }
+            @Override
+            public void readerFail(String errorMessage, int errorCode) {
+                // Deprecated in SDK v3.0.4
             }
 
         }, new CardFlightAutoConfigHandler() {
@@ -264,7 +334,7 @@ public class ReaderDemoFragment extends Fragment {
         decryptButton.setOnClickListener(buttonClickListener);
 
         if (readerIsConnected) {
-            readerConnected();
+            readerConnected(true);
         } else {
             readerDisconnected();
         }
@@ -399,13 +469,14 @@ public class ReaderDemoFragment extends Fragment {
 
     private void displaySerialNumber() {
         String s = Reader.serialNumber;
-        Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+        showToast(s);
     }
 
     private void tokenizeCardMethod() {
         showToast("Tokenize card...");
         if (mCard != null) {
             mCard.tokenize(
+                    mContext,
                     new CardFlightTokenizationHandler() {
                         @Override
                         public void tokenizationSuccessful(String s) {
@@ -414,15 +485,14 @@ public class ReaderDemoFragment extends Fragment {
                         }
 
                         @Override
-                        public void tokenizationFailed(String errorMessage, int errorCode) {
-                            Log.d(TAG, errorMessage);
-                            showToast(errorMessage);
+                        public void tokenizationFailed(CardFlightError error) {
+                            Log.d(TAG, "Error: " + error.toString());
+                            showToast(error.getMessage());
                         }
-                    },
-                    getApplicationContext()
+                    }
             );
         } else {
-            showToast("Unable to tokenize- no card present");
+            showToast("Unable to tokenize - no card present");
         }
     }
 
@@ -431,16 +501,16 @@ public class ReaderDemoFragment extends Fragment {
 
             mCard.decryptPrivateLabel(mContext, new CardFlightDecryptHandler() {
 
-                @Override public void decryptSuccess(HashMap decryptData) {
+                @Override
+                public void decryptSuccess(HashMap decryptData) {
                     Toast.makeText(getApplicationContext(),
                             "Decrypt completed: " + decryptData.toString(), Toast.LENGTH_LONG)
                             .show();
                 }
 
-                @Override public void decryptFailed(String errorMessage, int errorCode) {
-                    Toast.makeText(getApplicationContext(),
-                            "Decrypt Failed : " + errorMessage, Toast.LENGTH_SHORT)
-                            .show();
+                @Override
+                public void decryptFailed(CardFlightError error) {
+                    showToast("Decrypt failed: " + error.getMessage());
                 }
             });
         } else {
@@ -448,13 +518,14 @@ public class ReaderDemoFragment extends Fragment {
         }
     }
 
-    private void authorizeCard(double price) {
+    private void authorizeCard(int price) {
         showToast("Authorizing card...");
-        HashMap chargeDetailsHash = new HashMap();
+        HashMap<String, Integer> chargeDetailsHash = new HashMap<>();
         chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, price);
 
         if (mCard != null) {
             mCard.authorize(
+                    mContext,
                     chargeDetailsHash,
                     new CardFlightAuthHandler() {
                         @Override
@@ -465,16 +536,16 @@ public class ReaderDemoFragment extends Fragment {
                             chargePresent();
                             chargeUpdated();
 
-                            HashMap<String, String> newMap = charge.getMetadata();
+                            HashMap newMap = charge.getMetadata();
                             showToast("metadata: " + newMap.get("Test"));
                         }
 
-                        @Override public void authFailed(String errorMessage, int errorCode) {
-                            Log.d(TAG, errorMessage);
-                            showToast(errorMessage);
+                        @Override
+                        public void authFailed(CardFlightError error) {
+                            Log.d(TAG, "Error: " + error.toString());
+                            showToast(error.getMessage());
                         }
-                    },
-                    getApplicationContext()
+                    }
             );
         } else {
             showToast("Unable to tokenize- no card present");
@@ -493,9 +564,10 @@ public class ReaderDemoFragment extends Fragment {
                     chargeUpdated();
                 }
 
-                @Override public void captureFailed(String errorMessage, int errorCode) {
-                    Log.d(TAG, errorMessage);
-                    showToast(errorMessage);
+                @Override
+                public void captureFailed(CardFlightError error) {
+                    Log.d(TAG, "Error: " + error.toString());
+                    showToast(error.getMessage());
                 }
             });
         } else {
@@ -510,49 +582,56 @@ public class ReaderDemoFragment extends Fragment {
         }
         Log.d(TAG, "Processing payment of: " + price);
 
-        HashMap chargeDetailsHash = new HashMap();
+        HashMap<String, Double> chargeDetailsHash = new HashMap<>();
         chargeDetailsHash.put(Card.REQUEST_KEY_AMOUNT, Double.valueOf(price));
 
         if (mCard != null) {
-            mCard.chargeCard(chargeDetailsHash, new CardFlightPaymentHandler() {
+            mCard.chargeCard(
+                    mContext,
+                    chargeDetailsHash,
+                    new CardFlightPaymentHandler() {
+                        @Override
+                        public void transactionSuccessful(Charge charge) {
+                            showToast(String.format("Charge of $%s successful", charge.getAmount()));
 
-                @Override
-                public void transactionSuccessful(Charge charge) {
-                    showToast(String.format("Charge of $%s successful", charge.getAmount()));
+                            // Save charge object
+                            mCharge = charge;
+                            chargePresent();
+                            chargeUpdated();
+                        }
 
-                    // Save charge object
-                    mCharge = charge;
-                    chargePresent();
-                    chargeUpdated();
-                }
-
-                @Override public void transactionFailed(String errorMessage, int errorCode) {
-                    Log.d(TAG, errorMessage);
-                    showToast(errorMessage);
-                }
-            }, getApplicationContext());
+                        @Override
+                        public void transactionFailed(CardFlightError error) {
+                            Log.d(TAG, "Error: " + error.toString());
+                            showToast(error.toString());
+                        }
+                    }
+            );
         } else {
-            showToast("Unable to process payment- no card present");
+            showToast("Unable to process payment - no card present");
         }
     }
 
     private void voidCharge() {
         showToast("Voiding charge...");
         if (mCharge != null) {
-            Charge.processVoid(mCharge.getToken(), new CardFlightPaymentHandler() {
+            Charge.processVoid(
+                    mCharge.getToken(),
+                    new CardFlightPaymentHandler() {
+                        @Override
+                        public void transactionSuccessful(Charge charge) {
+                            showToast("Charge voided");
+                            mCharge = charge;
+                            chargeUpdated();
+                        }
 
-                @Override
-                public void transactionSuccessful(Charge charge) {
-                    showToast("Charge voided");
-                    mCharge = charge;
-                    chargeUpdated();
-                }
-
-                @Override public void transactionFailed(String errorMessage, int errorCode) {
-                    Log.d(TAG, errorMessage);
-                    showToast(errorMessage);
-                }
-            });
+                        @Override
+                        public void transactionFailed(CardFlightError error) {
+                            Log.d(TAG, "Error: " + error.toString());
+                            showToast(error.toString());
+                        }
+                    }
+            );
         } else {
             showToast("Unable to void charge");
         }
@@ -561,31 +640,42 @@ public class ReaderDemoFragment extends Fragment {
     private void refundCharge(double refund) {
         showToast("Refunding charge...");
         if (mCharge != null) {
-            Charge.processRefund(mCharge.getToken(), refund, new CardFlightPaymentHandler() {
+            Charge.processRefund(
+                    mCharge.getToken(),
+                    refund,
+                    new CardFlightPaymentHandler() {
+                        @Override
+                        public void transactionSuccessful(Charge charge) {
+                            showToast(String.format("%s refunded to charge", mCharge.getAmountRefunded()));
+                            mCharge = charge;
+                            chargeUpdated();
+                        }
 
-                @Override
-                public void transactionSuccessful(Charge charge) {
-                    showToast(String.format("%s refunded to charge", mCharge.getAmountRefunded()));
-                    mCharge = charge;
-                    chargeUpdated();
-                }
-
-                @Override public void transactionFailed(String errorMessage, int errorCode) {
-                    Log.d(TAG, errorMessage);
-                    showToast(errorMessage);
-                }
-            });
+                        @Override
+                        public void transactionFailed(CardFlightError error) {
+                            Log.d(TAG, "Error: " + error.toString());
+                            showToast(error.toString());
+                        }
+                    }
+            );
         } else {
             showToast("Unable to refund charge");
         }
     }
 
+    private void readerConnecting() {
+        readerIsConnected = false;
+        readerStatus.setText("Reader connecting");
+        swipeCardButton.setEnabled(false);
+        displaySerialButton.setEnabled(false);
+        autoConfigButton.setEnabled(false);
+    }
 
-    private void readerConnected() {
-        readerIsConnected = true;
+    private void readerConnected(boolean isReadyForCommands) {
         readerStatus.setText("Reader connected");
-        swipeCardButton.setEnabled(true);
-        displaySerialButton.setEnabled(true);
+        readerIsConnected = isReadyForCommands;
+        swipeCardButton.setEnabled(isReadyForCommands);
+        displaySerialButton.setEnabled(isReadyForCommands);
         autoConfigButton.setEnabled(false);
     }
 
@@ -594,7 +684,7 @@ public class ReaderDemoFragment extends Fragment {
         readerStatus.setText("Reader not connected");
         swipeCardButton.setEnabled(false);
         displaySerialButton.setEnabled(false);
-        autoConfigButton.setEnabled(false);
+        autoConfigButton.setEnabled(true);
         fieldsReset();
     }
 
@@ -645,12 +735,11 @@ public class ReaderDemoFragment extends Fragment {
     }
 
     private void setCardPresent() {
-
+        cardHolderName.setText(mCard.getName());
+        cardType.setText(mCard.getType());
         cardNumber.setText(mCard.getCardNumber());
         cardLastFour.setText(mCard.getLast4());
-        cardType.setText(mCard.getType());
         zipCode.setText(mCard.getZipCode());
-        cardHolderName.setText(mCard.getName());
 
         processPaymentButton.setEnabled(true);
         tokenizeCardButton.setEnabled(true);
@@ -762,7 +851,7 @@ public class ReaderDemoFragment extends Fragment {
                 dialog.dismiss();
 
                 String price = priceInput.getText().toString();
-                double amount = Double.valueOf(price);
+                int amount = Integer.valueOf(price);
 
                 authorizeCard(amount);
             }
@@ -811,7 +900,7 @@ public class ReaderDemoFragment extends Fragment {
     }
 
     private void showToast(String text) {
-        Toast t = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
+        Toast t = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
         t.setGravity(Gravity.CENTER, 0, 0);
         t.show();
     }

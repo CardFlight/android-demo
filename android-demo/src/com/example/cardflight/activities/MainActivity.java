@@ -13,10 +13,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
 import com.example.cardflight.R;
 import com.example.cardflight.fragments.ReaderDemoFragment;
 import com.example.cardflight.fragments.SplashFragment;
 
+/**
+ * Copyright (c) 2015 CardFlight Inc. All rights reserved.
+ */
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getSimpleName();
 

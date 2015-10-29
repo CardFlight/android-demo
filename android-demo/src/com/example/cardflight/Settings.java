@@ -1,7 +1,7 @@
 package com.example.cardflight;
 
 /**
- * Created by pcedrowski on 9/2/14.
+ * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
 public class Settings {
     //TODO Put your API & Account Tokens here
