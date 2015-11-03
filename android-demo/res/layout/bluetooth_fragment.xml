@@ -136,6 +136,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <Button
+            android:id="@+id/displaySerialized"
+            style="@style/Button"
+            android:layout_marginTop="@dimen/content_padding"
+            android:text="Show serialized"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 </ScrollView>

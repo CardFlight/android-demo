@@ -1,11 +1,13 @@
 package com.example.cardflight.fragments;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -42,6 +44,17 @@ import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
 import com.getcardflight.views.PaymentView;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -66,6 +79,7 @@ public class ReaderDemoFragment extends Fragment {
     private Button voidButton;
     private Button refundButton;
     private Button decryptButton;
+    private Button serializeButton;
     private TextView readerStatus;
     private TextView cardNumber;
     private TextView cardType;
@@ -298,6 +312,7 @@ public class ReaderDemoFragment extends Fragment {
         zipCodeButton = (Button) rootView.findViewById(R.id.fetchZipCodeButton);
         voidButton = (Button) rootView.findViewById(R.id.voidCard);
         refundButton = (Button) rootView.findViewById(R.id.refundCard);
+        serializeButton = (Button) rootView.findViewById(R.id.displaySerialized);
         readerStatus = (TextView) rootView.findViewById(R.id.reader_status);
         cardHolderName = (TextView) rootView.findViewById(R.id.cardHolderName);
 
@@ -332,6 +347,7 @@ public class ReaderDemoFragment extends Fragment {
         voidButton.setOnClickListener(buttonClickListener);
         refundButton.setOnClickListener(buttonClickListener);
         decryptButton.setOnClickListener(buttonClickListener);
+        serializeButton.setOnClickListener(buttonClickListener);
 
         if (readerIsConnected) {
             readerConnected(true);
@@ -446,11 +462,80 @@ public class ReaderDemoFragment extends Fragment {
                 case R.id.decryptButton:
                     decryptCardMethod();
                     break;
+                case R.id.displaySerialized:
+                    serializeCard(mCard);
+                    Log.d("debug", "file contents = " + readFile("card.bin"));
+                    Card newcard = unserializeCard("card.bin");
+                    Log.d("debug", "newcard = " + newcard.getCardType() + " " + newcard.getLast4());
+                    break;
                 default:
                     break;
             }
         }
     };
+
+    private void serializeCard(Card card) {
+        File file = new File(mContext.getFilesDir().getPath() + "/card.bin");
+
+        FileOutputStream fos;
+        ObjectOutputStream oos;
+
+        try {
+            fos = new FileOutputStream(file);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(card);
+
+            oos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Card unserializeCard(String filename) {
+        Card card = null;
+
+        FileInputStream fis;
+        ObjectInputStream ois;
+
+        try {
+            fis = new FileInputStream(mContext.getFilesDir().getPath() + "/" + filename);
+            ois = new ObjectInputStream(fis);
+
+            card = (Card) ois.readObject();
+            ois.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (OptionalDataException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return card;
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private String readFile(String filename) {
+        String contents = "";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(mContext.getFilesDir().getPath()
+                + "/" + filename))) {
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                contents += line;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return contents;
+    }
 
     private void enableZipCode(boolean enable) {
         mFieldHolder.enableZipCode(enable);
