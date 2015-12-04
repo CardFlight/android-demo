@@ -64,6 +64,7 @@
         android:layout_gravity="center"
         android:contentDescription="Zip Code Field"
         android:hint="@string/zip_code"
+        android:inputType="textPostalAddress"
         android:imeOptions="actionDone"
         android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 "
         android:maxLength="10"

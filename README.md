@@ -13,6 +13,16 @@ Authentication is done through your API Keys and processing is done through the 
 SDK Change Log
 ----------
 
+v3.0.7
+
+- New CardFlightError class
+- Bug fixes
+
+v3.0.6
+
+- Increased Android M support
+- Added serializable interface support for Card object
+
 v3.0.5
 
 - Bug fixes

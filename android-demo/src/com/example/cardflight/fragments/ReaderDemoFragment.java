@@ -1,5 +1,6 @@
 package com.example.cardflight.fragments;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -26,42 +27,38 @@ import android.widget.Toast;
 
 import com.example.cardflight.R;
 import com.example.cardflight.Settings;
+import com.example.cardflight.handlers.MyCFAutoConfigHandler;
+import com.example.cardflight.handlers.MyCFDeviceHandler;
+import com.example.cardflight.handlers.MyUIHandler;
 import com.getcardflight.interfaces.CardFlightAuthHandler;
-import com.getcardflight.interfaces.CardFlightAutoConfigHandler;
 import com.getcardflight.interfaces.CardFlightCaptureHandler;
 import com.getcardflight.interfaces.CardFlightDecryptHandler;
-import com.getcardflight.interfaces.CardFlightDeviceHandler;
 import com.getcardflight.interfaces.CardFlightPaymentHandler;
 import com.getcardflight.interfaces.CardFlightTokenizationHandler;
 import com.getcardflight.interfaces.OnCardKeyedListener;
 import com.getcardflight.interfaces.OnFieldResetListener;
-import com.getcardflight.models.CFEMVMessage;
 import com.getcardflight.models.Card;
 import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.CardFlightError;
-import com.getcardflight.models.CardFlightErrors;
 import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
+import com.getcardflight.util.PermissionUtils;
 import com.getcardflight.views.PaymentView;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
-import java.io.StreamCorruptedException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
-public class ReaderDemoFragment extends Fragment {
+public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     private static final String TAG = ReaderDemoFragment.class.getSimpleName();
     private Context mContext;
 
@@ -93,7 +90,6 @@ public class ReaderDemoFragment extends Fragment {
     private TextView cardHolderName;
     private CheckBox zipCodeEnabled;
 
-    private Reader reader = null;
     private Card mCard = null;
     private Charge mCharge = null;
     private OnCardKeyedListener onCardKeyedListener;
@@ -110,164 +106,35 @@ public class ReaderDemoFragment extends Fragment {
         getActivity().getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        PermissionUtils.requestPermission(
+                mContext,
+                this,
+                getView(),
+                new String[]{
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                "Need microphone and storage access for demo",
+                1
+        );
+
         // Instantiate CardFlight Instance
-        CardFlight.getInstance().setApiTokenAndAccountToken(Settings.API_TOKEN, Settings.ACCOUNT_TOKEN);
-        CardFlight.getInstance().setLogging(true);
+        CardFlight.getInstance()
+                .setApiTokenAndAccountToken(Settings.API_TOKEN, Settings.ACCOUNT_TOKEN);
+        CardFlight.getInstance()
+                .setLogging(true);
 
-        // Create a new Reader object with AutoConfig handler
-        reader = new Reader(getApplicationContext(), new CardFlightDeviceHandler() {
-
-            @Override
-            public void readerIsConnecting() {
-                readerConnecting();
-            }
-
-            @Override
-            public void readerIsConnected(boolean b, CardFlightError cardFlightError) {
-                if (cardFlightError == null) {
-                    readerConnected(true);
-                } else {
-                    showToast(cardFlightError.getMessage());
-                }
-            }
-
-            @Override
-            public void readerSwipeDetected() {
-                showToast("Swipe detected");
-            }
-
-            @Override
-            public void emvTransactionResult(Charge charge, boolean b, CFEMVMessage cfemvMessage) {
-                if (charge != null) {
-                    if (b) {
-                        showToast("Approved - needs signature");
-                    } else {
-                        showToast("Approved - no CVM");
-                    }
-                } else {
-                    showToast("Message: " + cfemvMessage.getMessage());
-                }
-            }
-
-            @Override
-            public void emvRequestApplicationSelection(ArrayList arrayList) {
-                showToast("Multiple AIDs available");
-            }
-
-            @Override
-            public void emvMessage(CFEMVMessage cfemvMessage) {
-                showToast("Message: " + cfemvMessage.getMessage());
-            }
-
-            @Override
-            public void emvCardResponse(String s, String s1) {
-                showToast("Charge " + s1 + " ending in " + s + "?");
-            }
-
-            @Override
-            public void emvErrorResponse(CardFlightError cardFlightError) {
-                showToast("Error: " + cardFlightError.getMessage());
-            }
-
-            @Override
-            public void emvAmountRequested() {
-                showToast("Amount requested");
-            }
-
-            @Override
-            public void readerBatteryLow() {
-                showToast("Reader battery low");
-            }
-
-            @Override
-            public void emvCardDipped() {
-                showToast("Card dipped");
-            }
-
-            @Override
-            public void emvCardRemoved() {
-                showToast("Card removed");
-            }
-
-            @Override
-            public void readerCardResponse(Card card, CardFlightError cardFlightError) {
-                if (cardFlightError == null) {
-                    Toast.makeText(getApplicationContext(),
-                            "Device swipe completed", Toast.LENGTH_SHORT)
-                            .show();
-
-                    mCard = card;
-
-                    fillFieldsWithData(card);
-                } else {
-                    showToast("Error: " + cardFlightError.getMessage());
-
-                    if (cardFlightError == CardFlightErrors.DEVICE_NOT_SUPPORTED.getError()) {
-                        enableAutoconfigButton();
-                    }
-                }
-            }
-
-            @Override
-            public void readerIsAttached() {
-                readerConnected(true);
-            }
-
-            @Override
-            public void readerIsDisconnected() {
-                // TODO Auto-generated method stub
-                Toast.makeText(getApplicationContext(),
-                        "Device disconnected", Toast.LENGTH_SHORT)
-                        .show();
-
-                readerDisconnected();
-            }
-
-            @Override
-            public void readerSwipeDidCancel() {
-                showToast("Swipe cancelled");
-            }
-
-            @Override
-            public void readerNotDetected() {
-                readerDisconnected();
-            }
-
-            @Override
-            public void deviceBeginSwipe() {
-                // Deprecated in SDK v3.0.4
-            }
-
-            @Override
-            public void readerFail(String errorMessage, int errorCode) {
-                // Deprecated in SDK v3.0.4
-            }
-
-        }, new CardFlightAutoConfigHandler() {
-            @Override
-            public void autoConfigProgressUpdate(int i) {
-                Log.i(TAG, "AutoConfig progress %" + i);
-                readerStatus.setText("AutoConfig Progress %" + i);
-            }
-
-            @Override
-            public void autoConfigFinished() {
-                Log.i(TAG, "AutoConfig finished");
-            }
-
-            @Override
-            public void autoConfigFailed() {
-                Log.i(TAG, "AutoConfig failed");
-                readerStatus.setText("AutoConfig failed -- device is not supported");
-            }
-        });
+        // Instantiate Reader Instance
+        Reader.getDefault(mContext)
+                .setDeviceHandler(new MyCFDeviceHandler(this))
+                .setAutoConfigHandler(new MyCFAutoConfigHandler(this));
 
         // Create the listener that listens to when the PaymentView has been filled out manually
         onCardKeyedListener = new OnCardKeyedListener() {
 
             @Override
             public void onCardKeyed(Card card) {
-                if( card != null ) {
+                if (card != null) {
                     mCard = card;
                     fillFieldsWithData(mCard);
                 }
@@ -426,7 +293,8 @@ public class ReaderDemoFragment extends Fragment {
                     break;
 
                 case R.id.autoConfigButton:
-                    reader.startAutoConfigProcess();
+                    Reader.getDefault(mContext)
+                            .startAutoConfigProcess();
                     break;
 
                 case R.id.refundCard:
@@ -486,8 +354,6 @@ public class ReaderDemoFragment extends Fragment {
             oos.writeObject(card);
 
             oos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -505,15 +371,7 @@ public class ReaderDemoFragment extends Fragment {
 
             card = (Card) ois.readObject();
             ois.close();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (OptionalDataException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (StreamCorruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
 
@@ -526,7 +384,7 @@ public class ReaderDemoFragment extends Fragment {
 
         try (BufferedReader br = new BufferedReader(new FileReader(mContext.getFilesDir().getPath()
                 + "/" + filename))) {
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null) {
                 contents += line;
             }
@@ -548,7 +406,8 @@ public class ReaderDemoFragment extends Fragment {
     }
 
     private void launchSwipeEvent() {
-        reader.beginSwipe();
+        Reader.getDefault(mContext)
+                .beginSwipe();
         mFieldHolder.resetFields();
     }
 
@@ -660,15 +519,12 @@ public class ReaderDemoFragment extends Fragment {
         }
     }
 
-    private void chargeCard(String price) {
-        if (TextUtils.isEmpty(price)) {
-            showToast("Price cannot be empty");
-            return;
-        }
+    private void chargeCard(int price) {
         Log.d(TAG, "Processing payment of: " + price);
 
-        HashMap<String, Double> chargeDetailsHash = new HashMap<>();
-        chargeDetailsHash.put(Card.REQUEST_KEY_AMOUNT, Double.valueOf(price));
+        HashMap<String, Object> chargeDetailsHash = new HashMap<>();
+        chargeDetailsHash.put(Card.REQUEST_KEY_ACCOUNT_TOKEN, Settings.ACCOUNT_TOKEN);
+        chargeDetailsHash.put(Card.REQUEST_KEY_AMOUNT, price);
 
         if (mCard != null) {
             mCard.chargeCard(
@@ -738,7 +594,6 @@ public class ReaderDemoFragment extends Fragment {
 
                         @Override
                         public void transactionFailed(CardFlightError error) {
-                            Log.d(TAG, "Error: " + error.toString());
                             showToast(error.toString());
                         }
                     }
@@ -820,11 +675,19 @@ public class ReaderDemoFragment extends Fragment {
     }
 
     private void setCardPresent() {
-        cardHolderName.setText(mCard.getName());
-        cardType.setText(mCard.getType());
-        cardNumber.setText(mCard.getCardNumber());
-        cardLastFour.setText(mCard.getLast4());
-        zipCode.setText(mCard.getZipCode());
+        if (mCard == null) {
+            cardHolderName.setText("");
+            cardType.setText("");
+            cardNumber.setText("");
+            cardLastFour.setText("");
+            zipCode.setText("");
+        } else {
+            cardHolderName.setText(mCard.getName());
+            cardType.setText(mCard.getType());
+            cardNumber.setText(mCard.getCardNumber());
+            cardLastFour.setText(mCard.getLast4());
+            zipCode.setText(mCard.getZipCode());
+        }
 
         processPaymentButton.setEnabled(true);
         tokenizeCardButton.setEnabled(true);
@@ -859,11 +722,7 @@ public class ReaderDemoFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        // destroy cardflight instance
-        if (reader != null) {
-            reader.StopReader();
-            reader = null;
-        }
+        Reader.tearDown();
     }
 
     private Context getApplicationContext() {
@@ -899,9 +758,12 @@ public class ReaderDemoFragment extends Fragment {
                 dialog.dismiss();
 
                 String price = priceInput.getText().toString();
-                double amount = Double.valueOf(price);
 
-                chargeCard(String.valueOf(amount));
+                if (TextUtils.isEmpty(price)) {
+                    showToast("Price cannot be empty");
+                } else {
+                    chargeCard((int) (Double.valueOf(price) * 100));
+                }
             }
         });
 
@@ -988,5 +850,77 @@ public class ReaderDemoFragment extends Fragment {
         Toast t = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
         t.setGravity(Gravity.CENTER, 0, 0);
         t.show();
+    }
+
+    @Override
+    public void updateReaderStatus(MyCFDeviceHandler.ReaderStatus status) {
+        switch (status) {
+            case CONNECTING:
+                readerConnecting();
+                break;
+            case CONNECTED:
+                readerConnected(false);
+                break;
+            case ATTACHED:
+                readerConnected(true);
+                break;
+            case DISCONNECTED:
+                readerDisconnected();
+                break;
+            case UNKNOWN:
+                readerStatus.setText("Unknown Error");
+                readerIsConnected = false;
+                swipeCardButton.setEnabled(false);
+                displaySerialButton.setEnabled(false);
+                autoConfigButton.setEnabled(true);
+                break;
+            case NOT_COMPATIBLE:
+                readerStatus.setText("Device Not Compatible");
+                readerIsConnected = false;
+                swipeCardButton.setEnabled(false);
+                displaySerialButton.setEnabled(false);
+                autoConfigButton.setEnabled(true);
+                break;
+        }
+    }
+
+    @Override
+    public void showAlert(String message) {
+        showToast(message);
+    }
+
+    @Override
+    public void showConfirmCharge(String prompt) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+
+        dialogBuilder.setTitle("Confirm Transaction");
+        dialogBuilder.setMessage(prompt);
+
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Reader.getDefault(mContext).emvProcessTransaction(true);
+
+                dialog.dismiss();
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Reader.getDefault(mContext).emvProcessTransaction(false);
+
+                dialog.dismiss();
+            }
+        });
+
+        dialogBuilder.create().show();
+    }
+
+    @Override
+    public void setCard(Card card) {
+        mCard = card;
+
+        setCardPresent();
+
+        swipeCardButton.setEnabled(true);
     }
 }

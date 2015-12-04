@@ -2,20 +2,21 @@
 <resources>
 
     <!-- Theme colors -->
-    <color name="primary">#ff6699ff</color>
-    <color name="primary_off">#ff517acc</color>
-    <color name="primary_disabled">#ff334c7f</color>
-    <color name="primary_pressed">#ff517acc</color>
+    <color name="colorPrimary">@color/cardflight_blue</color>
+    <!--<color name="colorPrimaryDark">#ff0f5aa5</color>-->
+    <color name="colorPrimaryDark">@color/cardflight_medium_blue</color>
+    <color name="colorAccent">@color/cardflight_orange</color>
 
-    <color name="text_primary">#ffffff</color>
-    <color name="text_disabled">#c0c0c0</color>
-    <color name="text_pressed">#ff0088cc</color>
+    <color name="cardflight_dark_blue">#02274C</color>
+    <color name="cardflight_medium_blue">#064582</color>
+    <color name="cardflight_blue">#1371CF</color>
+    <color name="cardflight_grey">#3D3F40</color>
+    <color name="cardflight_white">#F3F3F3</color>
+    <color name="cardflight_orange">#F68C2D</color>
+    <color name="cardflight_green">#BBF62D</color>
+
+    <color name="light_grey">#999999</color>
 
     <color name="warning">#ff0c00</color>
-
-    <!-- Other colors-->
-    <color name="DKGRAY">#ff444444</color>
-    <color name="half_transparent">#BB000000</color>
-
 
 </resources>
