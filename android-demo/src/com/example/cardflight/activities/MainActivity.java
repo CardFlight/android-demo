@@ -1,18 +1,16 @@
 package com.example.cardflight.activities;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.example.cardflight.R;
 import com.example.cardflight.fragments.ReaderDemoFragment;
@@ -21,95 +19,56 @@ import com.example.cardflight.fragments.SplashFragment;
 /**
  * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
-public class MainActivity extends Activity {
-    private static final String TAG = MainActivity.class.getSimpleName();
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
-    private String[] mDrawerOptions;
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private CharSequence mTitle;
 
-    private SplashFragment splashFragment;
-    private ReaderDemoFragment readerDemoFragment;
-    private Fragment fragment;
-    private int drawerPosition = 0;
+    private SplashFragment mSplashFragment;
+    private ReaderDemoFragment mReaderDemoFragment;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main_activity);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_activity);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        mDrawerOptions = new String[]{"Home", "CardFlight Reader"};
+        mSplashFragment = new SplashFragment();
+        mReaderDemoFragment = new ReaderDemoFragment();
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, R.id.drawer_list_text, mDrawerOptions));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
+                R.string.app_name, R.string.app_name) {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
-
-            /**
-             * Called when a drawer has settled in a completely closed state.
-             */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getActionBar().setTitle(mTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
-            /**
-             * Called when a drawer has settled in a completely open state.
-             */
+            @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getActionBar().setTitle("Select a Reader option");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, 0);
             }
         };
 
-        // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
-	}
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        selectItem(drawerPosition);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putInt("position", drawerPosition);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        drawerPosition = savedInstanceState.getInt("position");
-        selectItem(drawerPosition);
+        changeFragment(mSplashFragment);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
     }
 
@@ -120,71 +79,39 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
+        return mDrawerToggle.onOptionsItemSelected(item)
+                || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    /** Swaps fragments in the main content view */
-    private void selectItem(int position) {
-        boolean commitChange = position != drawerPosition;
-
-        switch (position) {
-            case 0:
-                if (splashFragment == null)
-                    splashFragment = new SplashFragment();
-                fragment = splashFragment;
-                drawerPosition = 0;
-                commitChange = true;
-                break;
-
-            case 1:
-                if (readerDemoFragment == null)
-                    readerDemoFragment = new ReaderDemoFragment();
-                fragment = readerDemoFragment;
-                drawerPosition = 1;
-                break;
-
-            default:
-                if (splashFragment == null)
-                    splashFragment = new SplashFragment();
-                fragment = splashFragment;
-                drawerPosition = 0;
-                break;
-        }
-
-        if (commitChange) {
-            // Insert the fragment by replacing any existing fragment
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment)
-                    .commit();
-        }
-
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mDrawerOptions[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
     }
 
     @Override
     public void setTitle(CharSequence title) {
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
+        mToolbar.setTitle(title);
     }
 
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_home:
+                changeFragment(mSplashFragment);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+            case R.id.nav_reader:
+                changeFragment(mReaderDemoFragment);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return true;
+        }
+
+        return false;
+    }
+
+    private void changeFragment(Fragment fragment) {
+        if (fragment != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.placholder, fragment)
+                    .commit();
+        }
+    }
 }

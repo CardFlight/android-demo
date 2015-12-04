@@ -1,464 +1,491 @@
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/content_padding"
-        android:animateLayoutChanges="true">
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:padding="@dimen/content_padding">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="@string/cardflight_reader_demo"
             android:textSize="22sp"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"/>
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Insert Reader device to get started."
-            android:textSize="14sp"
-            android:gravity="center_horizontal"/>
+            android:textSize="14sp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/cardflight_translucent_black"/>
+            android:background="@color/cardflight_translucent_black" />
 
 
         <Button
             android:id="@+id/serialNumber"
-            style="@style/Button"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/content_padding"
+            android:layout_marginTop="@dimen/content_padding"
             android:text="@string/serial_number" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/cardflight_translucent_black"/>
+            android:background="@color/cardflight_translucent_black" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Reader Commands"
-            android:textStyle="bold"
             android:textSize="17sp"
-            android:gravity="center_horizontal"/>
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_margin="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:text="Status:"
-                android:textSize="17sp"
-                android:gravity="center"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/reader_status"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center"
                 android:text="Not connected"
-                android:textColor="@color/warning"
-                android:textSize="18sp"
                 android:textAllCaps="true"
-                android:gravity="center"/>
+                android:textColor="@color/warning"
+                android:textSize="18sp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/autoConfigButton"
-            style="@style/Button"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/run_auto_config" />
 
         <Button
             android:id="@+id/swipeCardButton"
-            style="@style/Button"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/content_padding"
             android:layout_marginTop="@dimen/content_padding"
             android:text="@string/swipe_card" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/cardflight_translucent_black"/>
+            android:background="@color/cardflight_translucent_black" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Payment View"
             android:textSize="17sp"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"/>
+            android:textStyle="bold" />
 
         <com.getcardflight.views.PaymentView
             android:id="@+id/cardEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:background="@drawable/text_field_bg"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
-            android:layout_gravity="center_horizontal" />
+            android:background="@drawable/text_field_bg"
+            android:gravity="center_horizontal" />
 
         <CheckBox
             android:id="@+id/zip_code_switch"
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enable Zip Code"/>
+            android:layout_gravity="center"
+            android:text="Enable Zip Code" />
 
         <Button
             android:id="@+id/fetchZipCodeButton"
-            style="@style/Button"
-            android:layout_marginTop="@dimen/content_padding"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="@dimen/content_padding"
+            android:layout_marginTop="@dimen/content_padding"
             android:text="@string/fetch_zip_code" />
 
         <Button
             android:id="@+id/resetFieldsButton"
-            style="@style/Button"
-            android:layout_marginTop="@dimen/content_padding"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginBottom="@dimen/content_padding"
             android:text="@string/reset_fields" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/cardflight_translucent_black"/>
+            android:background="@color/cardflight_translucent_black" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Card Information"
             android:textSize="17sp"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"/>
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="@string/card_holder_name"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/cardHolderName"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Type:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/card_type"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Card Number:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/card_number"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Last Four:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/card_last_four"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
 
-
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Zip Code:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/zip_code_field"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/cardflight_translucent_black"/>
+            android:background="@color/cardflight_translucent_black" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Card commands"
             android:textSize="17sp"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"/>
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/tokenizeCard"
-            style="@style/Button"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/content_padding"
+            android:layout_marginTop="@dimen/content_padding"
             android:text="@string/test_tokenize" />
 
         <Button
             android:id="@+id/decryptButton"
-            style="@style/Button"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/content_padding"
             android:text="@string/test_decrypt" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/cardflight_translucent_black"/>
+            android:background="@color/cardflight_translucent_black" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Charge Information"
             android:textSize="17sp"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"/>
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Token:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/charge_token"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Amount:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/charge_amount"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="Status"
-            android:textStyle="bold"
             android:textSize="17sp"
-            android:gravity="center"/>
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Captured:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/charge_captured"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Voided:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/charge_voided"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
             android:layout_width="300dp"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
                 android:text="Refunded:"
-                android:textSize="17sp"
-                android:gravity="left"/>
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/charge_refund"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"/>
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/cardflight_translucent_black"/>
+            android:background="@color/cardflight_translucent_black" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Charge Commands"
             android:textSize="17sp"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"/>
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="end">
+            android:layout_gravity="end"
+            android:orientation="horizontal">
 
             <RelativeLayout
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <Button
                     android:id="@+id/processPaymentButton"
-                    style="@style/Button"
+                    style="@style/CFButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:layout_gravity="center"
                     android:text="@string/test_charge" />
             </RelativeLayout>
 
@@ -466,23 +493,29 @@
                 android:layout_width="1dp"
                 android:layout_height="80dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/cardflight_translucent_black"/>
+                android:background="@color/cardflight_translucent_black" />
 
             <LinearLayout
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="start">
+                android:layout_gravity="start"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/authorizeCard"
-                    style="@style/Button"
+                    style="@style/CFButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="@string/auth_card" />
 
                 <Button
                     android:id="@+id/processCapture"
-                    style="@style/Button"
+                    style="@style/CFButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginTop="@dimen/content_padding"
                     android:text="@string/test_capture" />
             </LinearLayout>
@@ -490,21 +523,30 @@
 
         <Button
             android:id="@+id/voidCard"
-            style="@style/Button"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/content_padding"
             android:text="@string/void_charge" />
 
         <Button
             android:id="@+id/refundCard"
-            style="@style/Button"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/content_padding"
             android:text="@string/refund_charge" />
 
         <Button
             android:id="@+id/displaySerialized"
-            style="@style/Button"
-            android:layout_marginTop="@dimen/content_padding"
-            android:text="Show serialized"
+            style="@style/CFButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/content_padding"
+            android:text="Show serialized" />
 
     </LinearLayout>
 </ScrollView>
