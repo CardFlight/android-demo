@@ -8,12 +8,14 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,10 +61,10 @@ import java.util.HashMap;
  * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
 public class ReaderDemoFragment extends Fragment implements MyUIHandler {
-    private static final String TAG = ReaderDemoFragment.class.getSimpleName();
-    private Context mContext;
 
-    private boolean readerIsConnected;
+    private final String TAG = this.getClass().getSimpleName();
+
+    private Context mContext;
 
     private Button swipeCardButton;
     private Button processPaymentButton;
@@ -89,12 +91,14 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     private TextView zipCode;
     private TextView cardHolderName;
     private CheckBox zipCodeEnabled;
-
     private Card mCard = null;
     private Charge mCharge = null;
     private OnCardKeyedListener onCardKeyedListener;
     private OnFieldResetListener onFieldResetListener;
     private PaymentView mFieldHolder;
+
+    private Snackbar alert;
+    private boolean readerIsConnected;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,12 +151,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
             @Override
             public void onFieldReset() {
                 fieldsReset();
-
-                // TODO
-                // Example of how to listen for swipe after reset:
-                // 2 flags need to be maintained to follow the state of the reader
-//                if (readerIsConnected && !readerFailed)
-//                    reader.beginSwipe();
             }
         };
 
@@ -194,6 +192,14 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         zipCode = (TextView) rootView.findViewById(R.id.zip_code_field);
 
         zipCodeEnabled = (CheckBox) rootView.findViewById(R.id.zip_code_switch);
+
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
         zipCodeEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -217,12 +223,10 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         serializeButton.setOnClickListener(buttonClickListener);
 
         if (readerIsConnected) {
-            readerConnected(true);
+            updateReaderStatus("Reader connected", true);
         } else {
-            readerDisconnected();
+            updateReaderStatus("Reader disconnected", false);
         }
-
-        return rootView;
     }
 
     private View.OnClickListener buttonClickListener = new View.OnClickListener() {
@@ -234,7 +238,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                 case R.id.swipeCardButton:
                     launchSwipeEvent();
                     break;
-
                 case R.id.processPaymentButton:
                     dialogFragment = new DialogFragment() {
                         @Override
@@ -252,23 +255,18 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                     dialogFragment.setRetainInstance(true);
                     dialogFragment.setCancelable(false);
                     dialogFragment.show(getFragmentManager(), "dialogFragment");
-
                     break;
-
                 case R.id.serialNumber:
                     displaySerialNumber();
                     break;
-
                 case R.id.tokenizeCard:
                     tokenizeCardMethod();
                     break;
-
                 case R.id.resetFieldsButton:
                     // Call this to reset the fields.
                     // Attach a #OnFieldResetListener to capture when fields have reset.
                     mFieldHolder.resetFields();
                     break;
-
                 case R.id.authorizeCard:
                     dialogFragment = new DialogFragment() {
                         @Override
@@ -287,16 +285,13 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                     dialogFragment.setCancelable(false);
                     dialogFragment.show(getFragmentManager(), "dialogFragment");
                     break;
-
                 case R.id.processCapture:
                     captureCharge();
                     break;
-
                 case R.id.autoConfigButton:
                     Reader.getDefault(mContext)
                             .startAutoConfigProcess();
                     break;
-
                 case R.id.refundCard:
                     dialogFragment = new DialogFragment() {
                         @Override
@@ -315,28 +310,32 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                     dialogFragment.setCancelable(false);
                     dialogFragment.show(getFragmentManager(), "dialogFragment");
                     break;
-
                 case R.id.voidCard:
                     voidCharge();
                     break;
-
                 case R.id.fetchZipCodeButton:
                     if (mCard != null) {
-                        showToast(String.format("Zip Code: %s", mCard.getZipCode()));
+                        showAlert(String.format("Zip Code: %s", mCard.getZipCode()));
                     } else {
-                        showToast("No card is present");
+                        showAlert("No card is present");
                     }
                     break;
                 case R.id.decryptButton:
                     decryptCardMethod();
                     break;
                 case R.id.displaySerialized:
-                    serializeCard(mCard);
-                    Log.d("debug", "file contents = " + readFile("card.bin"));
-                    Card newcard = unserializeCard("card.bin");
-                    Log.d("debug", "newcard = " + newcard.getCardType() + " " + newcard.getLast4());
-                    break;
-                default:
+                    if (mCard != null) {
+                        serializeCard(mCard);
+                        Log.d(TAG, "file contents = " + readFile("card.bin"));
+                        Card newcard = unserializeCard("card.bin");
+
+                        if (newcard != null) {
+                            showAlert("Check debug logs for details...");
+                            Log.d(TAG, "newcard = " + newcard.getCardType() + " " + newcard.getLast4());
+                        }
+                    } else {
+                        showAlert("Card not entered!");
+                    }
                     break;
             }
         }
@@ -413,11 +412,11 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
     private void displaySerialNumber() {
         String s = Reader.serialNumber;
-        showToast(s);
+        showAlert(s);
     }
 
     private void tokenizeCardMethod() {
-        showToast("Tokenize card...");
+        showAlert("Tokenize card...");
         if (mCard != null) {
             mCard.tokenize(
                     mContext,
@@ -425,18 +424,18 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                         @Override
                         public void tokenizationSuccessful(String s) {
                             Log.d(TAG, "Tokenization Successful");
-                            showToast(s);
+                            showAlert(s);
                         }
 
                         @Override
                         public void tokenizationFailed(CardFlightError error) {
-                            Log.d(TAG, "Error: " + error.toString());
-                            showToast(error.getMessage());
+                            Log.e(TAG, "error: " + error.toString());
+                            showAlert(error.getMessage());
                         }
                     }
             );
         } else {
-            showToast("Unable to tokenize - no card present");
+            showAlert("Unable to tokenize - no card present");
         }
     }
 
@@ -454,16 +453,16 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
                 @Override
                 public void decryptFailed(CardFlightError error) {
-                    showToast("Decrypt failed: " + error.getMessage());
+                    showAlert("Decrypt failed: " + error.getMessage());
                 }
             });
         } else {
-            showToast("No card is present");
+            showAlert("No card is present");
         }
     }
 
     private void authorizeCard(int price) {
-        showToast("Authorizing card...");
+        showAlert("Authorizing card...");
         HashMap<String, Integer> chargeDetailsHash = new HashMap<>();
         chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, price);
 
@@ -475,47 +474,47 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                         @Override
                         public void authValid(Charge charge) {
                             Log.d(TAG, "Card authorize valid");
-                            showToast("Card authorized");
+                            showAlert("Card authorized");
                             mCharge = charge;
                             chargePresent();
                             chargeUpdated();
 
                             HashMap newMap = charge.getMetadata();
-                            showToast("metadata: " + newMap.get("Test"));
+                            showAlert("metadata: " + newMap.get("Test"));
                         }
 
                         @Override
                         public void authFailed(CardFlightError error) {
-                            Log.d(TAG, "Error: " + error.toString());
-                            showToast(error.getMessage());
+                            Log.e(TAG, "error: " + error.toString());
+                            showAlert(error.getMessage());
                         }
                     }
             );
         } else {
-            showToast("Unable to tokenize- no card present");
+            showAlert("Unable to tokenize- no card present");
         }
     }
 
     private void captureCharge() {
-        showToast("Capturing charge...");
+        showAlert("Capturing charge...");
         if (mCharge != null) {
             Charge.processCapture(mCharge.getToken(), mCharge.getAmount().doubleValue(), new CardFlightCaptureHandler() {
 
                 @Override
                 public void captureSuccessful(Charge charge) {
-                    showToast(String.format("Capture of $%s successful", charge.getAmount()));
+                    showAlert(String.format("Capture of $%s successful", charge.getAmount()));
                     mCharge = charge;
                     chargeUpdated();
                 }
 
                 @Override
                 public void captureFailed(CardFlightError error) {
-                    Log.d(TAG, "Error: " + error.toString());
-                    showToast(error.getMessage());
+                    Log.e(TAG, "error: " + error.toString());
+                    showAlert(error.getMessage());
                 }
             });
         } else {
-            showToast("Unable to capture charge");
+            showAlert("Unable to capture charge");
         }
     }
 
@@ -533,7 +532,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                     new CardFlightPaymentHandler() {
                         @Override
                         public void transactionSuccessful(Charge charge) {
-                            showToast(String.format("Charge of $%s successful", charge.getAmount()));
+                            showAlert(String.format("Charge of $%s successful", charge.getAmount()));
 
                             // Save charge object
                             mCharge = charge;
@@ -543,43 +542,43 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
                         @Override
                         public void transactionFailed(CardFlightError error) {
-                            Log.d(TAG, "Error: " + error.toString());
-                            showToast(error.toString());
+                            Log.e(TAG, "error: " + error.toString());
+                            showAlert(error.toString());
                         }
                     }
             );
         } else {
-            showToast("Unable to process payment - no card present");
+            showAlert("Unable to process payment - no card present");
         }
     }
 
     private void voidCharge() {
-        showToast("Voiding charge...");
+        showAlert("Voiding charge...");
         if (mCharge != null) {
             Charge.processVoid(
                     mCharge.getToken(),
                     new CardFlightPaymentHandler() {
                         @Override
                         public void transactionSuccessful(Charge charge) {
-                            showToast("Charge voided");
+                            showAlert("Charge voided");
                             mCharge = charge;
                             chargeUpdated();
                         }
 
                         @Override
                         public void transactionFailed(CardFlightError error) {
-                            Log.d(TAG, "Error: " + error.toString());
-                            showToast(error.toString());
+                            Log.e(TAG, "error: " + error.toString());
+                            showAlert(error.toString());
                         }
                     }
             );
         } else {
-            showToast("Unable to void charge");
+            showAlert("Unable to void charge");
         }
     }
 
     private void refundCharge(double refund) {
-        showToast("Refunding charge...");
+        showAlert("Refunding charge...");
         if (mCharge != null) {
             Charge.processRefund(
                     mCharge.getToken(),
@@ -587,51 +586,38 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                     new CardFlightPaymentHandler() {
                         @Override
                         public void transactionSuccessful(Charge charge) {
-                            showToast(String.format("%s refunded to charge", mCharge.getAmountRefunded()));
+                            showAlert(String.format("%s refunded to charge", mCharge.getAmountRefunded()));
                             mCharge = charge;
                             chargeUpdated();
                         }
 
                         @Override
                         public void transactionFailed(CardFlightError error) {
-                            showToast(error.toString());
+                            showAlert(error.toString());
                         }
                     }
             );
         } else {
-            showToast("Unable to refund charge");
+            showAlert("Unable to refund charge");
         }
     }
 
-    private void readerConnecting() {
-        readerIsConnected = false;
-        readerStatus.setText("Reader connecting");
-        swipeCardButton.setEnabled(false);
-        displaySerialButton.setEnabled(false);
-        autoConfigButton.setEnabled(false);
-    }
+    private void updateReaderStatus(String message, boolean isConnected) {
+        readerIsConnected = isConnected;
+        readerStatus.setText(message);
+        swipeCardButton.setEnabled(isConnected);
+        displaySerialButton.setEnabled(isConnected);
+        autoConfigButton.setEnabled(isConnected);
 
-    private void readerConnected(boolean isReadyForCommands) {
-        readerStatus.setText("Reader connected");
-        readerIsConnected = isReadyForCommands;
-        swipeCardButton.setEnabled(isReadyForCommands);
-        displaySerialButton.setEnabled(isReadyForCommands);
-        autoConfigButton.setEnabled(false);
-    }
-
-    private void readerDisconnected() {
-        readerIsConnected = false;
-        readerStatus.setText("Reader not connected");
-        swipeCardButton.setEnabled(false);
-        displaySerialButton.setEnabled(false);
-        autoConfigButton.setEnabled(true);
-        fieldsReset();
+        if (!isConnected) {
+            fieldsReset();
+        }
     }
 
     private void chargePresent() {
         captureChargeButton.setEnabled(true);
         chargeToken.setText(mCharge.getToken());
-        chargeAmount.setText("$" + mCharge.getAmount());
+        chargeAmount.setText(String.format("$%s", mCharge.getAmount().toString()));
     }
 
     private void chargeUpdated() {
@@ -714,10 +700,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         setCardPresent();
     }
 
-    private void enableAutoconfigButton() {
-        autoConfigButton.setEnabled(true);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -760,7 +742,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                 String price = priceInput.getText().toString();
 
                 if (TextUtils.isEmpty(price)) {
-                    showToast("Price cannot be empty");
+                    showAlert("Price cannot be empty");
                 } else {
                     chargeCard((int) (Double.valueOf(price) * 100));
                 }
@@ -846,39 +828,26 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         return builder.create();
     }
 
-    private void showToast(String text) {
-        Toast t = Toast.makeText(mContext, text, Toast.LENGTH_SHORT);
-        t.setGravity(Gravity.CENTER, 0, 0);
-        t.show();
-    }
-
     @Override
     public void updateReaderStatus(MyCFDeviceHandler.ReaderStatus status) {
         switch (status) {
-            case CONNECTING:
-                readerConnecting();
-                break;
             case CONNECTED:
-                readerConnected(false);
+                updateReaderStatus("Reader connected", true);
                 break;
             case ATTACHED:
-                readerConnected(true);
+                updateReaderStatus("Reader connecting", false);
                 break;
             case DISCONNECTED:
-                readerDisconnected();
+                updateReaderStatus("Reader disconnected", false);
                 break;
             case UNKNOWN:
-                readerStatus.setText("Unknown Error");
-                readerIsConnected = false;
-                swipeCardButton.setEnabled(false);
-                displaySerialButton.setEnabled(false);
+                updateReaderStatus("Unknown error", false);
+
                 autoConfigButton.setEnabled(true);
                 break;
             case NOT_COMPATIBLE:
-                readerStatus.setText("Device Not Compatible");
-                readerIsConnected = false;
-                swipeCardButton.setEnabled(false);
-                displaySerialButton.setEnabled(false);
+                updateReaderStatus("Device not compatible", false);
+
                 autoConfigButton.setEnabled(true);
                 break;
         }
@@ -886,7 +855,29 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
     @Override
     public void showAlert(String message) {
-        showToast(message);
+        if (alert != null) {
+            alert.dismiss();
+            alert = null;
+        }
+
+        if (getView() != null) {
+            alert = Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE);
+
+            View view = alert.getView();
+            TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setTextColor(Color.WHITE);
+
+            alert.setAction("Dismiss", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    alert.dismiss();
+                }
+            });
+
+            alert.setActionTextColor(ContextCompat.getColor(mContext, R.color.cardflight_blue));
+
+            alert.show();
+        }
     }
 
     @Override

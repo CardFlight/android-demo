@@ -11,9 +11,8 @@ import java.util.ArrayList;
 public class MyCFDeviceHandler implements CardFlightDeviceHandler {
 
     public enum ReaderStatus {
-        CONNECTING,
-        CONNECTED,
         ATTACHED,
+        CONNECTED,
         DISCONNECTED,
         UNKNOWN,
         NOT_COMPATIBLE
@@ -99,9 +98,11 @@ public class MyCFDeviceHandler implements CardFlightDeviceHandler {
         this.uiHandler.updateReaderStatus(ReaderStatus.ATTACHED);
     }
 
+    @Deprecated
     @Override
     public void readerIsConnecting() {
-        this.uiHandler.updateReaderStatus(ReaderStatus.CONNECTING);
+        // Deprecated - This method is a duplicate of readerIsAttached as of version 3.1 and will be
+        // removed in a future release
     }
 
     @Override
