@@ -47,6 +47,9 @@ import com.getcardflight.models.Reader;
 import com.getcardflight.util.PermissionUtils;
 import com.getcardflight.views.PaymentView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -524,6 +527,16 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         HashMap<String, Object> chargeDetailsHash = new HashMap<>();
         chargeDetailsHash.put(Card.REQUEST_KEY_ACCOUNT_TOKEN, Settings.ACCOUNT_TOKEN);
         chargeDetailsHash.put(Card.REQUEST_KEY_AMOUNT, price);
+
+        JSONObject metadata = new JSONObject();
+
+        try {
+            metadata.put("example_data", "123456789");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        chargeDetailsHash.put(Card.REQUEST_KEY_META_DATA, metadata);
 
         if (mCard != null) {
             mCard.chargeCard(
