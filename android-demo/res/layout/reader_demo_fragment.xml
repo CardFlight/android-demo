@@ -219,11 +219,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="left"
-                android:text="Card Number:"
+                android:text="First Six:"
                 android:textSize="17sp" />
 
             <TextView
-                android:id="@+id/card_number"
+                android:id="@+id/card_first_six"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

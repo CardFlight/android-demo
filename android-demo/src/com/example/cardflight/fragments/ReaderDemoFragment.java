@@ -32,6 +32,7 @@ import com.example.cardflight.Settings;
 import com.example.cardflight.handlers.MyCFAutoConfigHandler;
 import com.example.cardflight.handlers.MyCFDeviceHandler;
 import com.example.cardflight.handlers.MyUIHandler;
+import com.getcardflight.interfaces.CardFlightApiKeyAccountTokenHandler;
 import com.getcardflight.interfaces.CardFlightAuthHandler;
 import com.getcardflight.interfaces.CardFlightCaptureHandler;
 import com.getcardflight.interfaces.CardFlightDecryptHandler;
@@ -44,6 +45,7 @@ import com.getcardflight.models.CardFlight;
 import com.getcardflight.models.CardFlightError;
 import com.getcardflight.models.Charge;
 import com.getcardflight.models.Reader;
+import com.getcardflight.util.Constants;
 import com.getcardflight.util.PermissionUtils;
 import com.getcardflight.views.PaymentView;
 
@@ -83,7 +85,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     private Button decryptButton;
     private Button serializeButton;
     private TextView readerStatus;
-    private TextView cardNumber;
+    private TextView cardFirstSix;
     private TextView cardType;
     private TextView cardLastFour;
     private TextView chargeToken;
@@ -127,7 +129,18 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
         // Instantiate CardFlight Instance
         CardFlight.getInstance()
-                .setApiTokenAndAccountToken(Settings.API_TOKEN, Settings.ACCOUNT_TOKEN);
+                .setApiTokenAndAccountToken(Settings.API_TOKEN, Settings.ACCOUNT_TOKEN, new CardFlightApiKeyAccountTokenHandler() {
+                    @Override
+                    public void onSuccess() {
+                        Log.i(TAG, "API Key and Account Token set!");
+                    }
+
+                    @Override
+                    public void onFailed(CardFlightError cardFlightError) {
+                        Log.e(TAG, "API Key and Account Token failed to set!");
+                    }
+                });
+
         CardFlight.getInstance()
                 .setLogging(true);
 
@@ -184,7 +197,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         readerStatus = (TextView) rootView.findViewById(R.id.reader_status);
         cardHolderName = (TextView) rootView.findViewById(R.id.cardHolderName);
 
-        cardNumber = (TextView) rootView.findViewById(R.id.card_number);
+        cardFirstSix = (TextView) rootView.findViewById(R.id.card_first_six);
         cardType = (TextView) rootView.findViewById(R.id.card_type);
         cardLastFour = (TextView) rootView.findViewById(R.id.card_last_four);
         chargeToken = (TextView) rootView.findViewById(R.id.charge_token);
@@ -467,7 +480,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     private void authorizeCard(int price) {
         showAlert("Authorizing card...");
         HashMap<String, Integer> chargeDetailsHash = new HashMap<>();
-        chargeDetailsHash.put(Charge.REQUEST_KEY_AMOUNT, price);
+        chargeDetailsHash.put(Constants.REQUEST_KEY_AMOUNT, price);
 
         if (mCard != null) {
             mCard.authorize(
@@ -524,10 +537,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     private void chargeCard(int price) {
         Log.d(TAG, "Processing payment of: " + price);
 
-        HashMap<String, Object> chargeDetailsHash = new HashMap<>();
-        chargeDetailsHash.put(Card.REQUEST_KEY_ACCOUNT_TOKEN, Settings.ACCOUNT_TOKEN);
-        chargeDetailsHash.put(Card.REQUEST_KEY_AMOUNT, price);
-
         JSONObject metadata = new JSONObject();
 
         try {
@@ -536,7 +545,10 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
             e.printStackTrace();
         }
 
-        chargeDetailsHash.put(Card.REQUEST_KEY_META_DATA, metadata);
+        HashMap<String, Object> chargeDetailsHash = new HashMap<>();
+
+        chargeDetailsHash.put(Constants.REQUEST_KEY_AMOUNT, price);
+        chargeDetailsHash.put(Constants.REQUEST_KEY_META_DATA, metadata);
 
         if (mCard != null) {
             mCard.chargeCard(
@@ -634,12 +646,12 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     }
 
     private void chargeUpdated() {
-        chargeCaptured.setText(String.valueOf(mCharge.isCaputred()));
+        chargeCaptured.setText(String.valueOf(mCharge.isCaptured()));
         chargeVoided.setText(String.valueOf(mCharge.isVoided()));
         chargeRefunded.setText(String.format("%s | $%s", mCharge.isRefunded(),
                 mCharge.isRefunded() ? mCharge.getAmountRefunded().toString() : "-.--"));
 
-        if (mCharge.isCaputred() && !mCharge.isVoided() && !mCharge.isRefunded()) {
+        if (mCharge.isCaptured() && !mCharge.isVoided() && !mCharge.isRefunded()) {
             processPaymentButton.setEnabled(false);
             captureChargeButton.setEnabled(false);
             authorizeCardButton.setEnabled(false);
@@ -677,13 +689,13 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         if (mCard == null) {
             cardHolderName.setText("");
             cardType.setText("");
-            cardNumber.setText("");
+            cardFirstSix.setText("");
             cardLastFour.setText("");
             zipCode.setText("");
         } else {
             cardHolderName.setText(mCard.getName());
             cardType.setText(mCard.getType());
-            cardNumber.setText(mCard.getCardNumber());
+            cardFirstSix.setText(mCard.getFirst6());
             cardLastFour.setText(mCard.getLast4());
             zipCode.setText(mCard.getZipCode());
         }
@@ -696,7 +708,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
     private void fieldsReset() {
         mCard = null;
-        cardNumber.setText("----");
+        cardFirstSix.setText("----");
         cardLastFour.setText("----");
         cardType.setText("----");
         cardHolderName.setText("----");
