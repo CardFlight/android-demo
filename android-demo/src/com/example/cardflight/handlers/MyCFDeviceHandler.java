@@ -5,8 +5,11 @@ import com.getcardflight.models.CFEMVMessage;
 import com.getcardflight.models.Card;
 import com.getcardflight.models.CardFlightError;
 import com.getcardflight.models.Charge;
+import com.getcardflight.util.Constants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 
 public class MyCFDeviceHandler implements CardFlightDeviceHandler {
 
@@ -55,6 +58,15 @@ public class MyCFDeviceHandler implements CardFlightDeviceHandler {
     @Override
     public void emvCardResponse(String last4, String cardType) {
         this.uiHandler.showConfirmCharge("Charge " + cardType + "-" + last4);
+    }
+
+    @Override
+    public void emvCardResponse(HashMap<String, Object> hashMap) {
+        String cardType = (String) hashMap.get(Constants.CARD_TYPE);
+        String firstSix = (String) hashMap.get(Constants.FIRST_SIX);
+        String lastFour = (String) hashMap.get(Constants.LAST_FOUR);
+
+        this.uiHandler.showConfirmCharge(String.format(Locale.US, "Charge %s %s****%s?", cardType, firstSix, lastFour));
     }
 
     @Override
