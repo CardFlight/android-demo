@@ -74,7 +74,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     private Button swipeCardButton;
     private Button processPaymentButton;
     private Button resetFieldsButton;
-    private Button displaySerialButton;
     private Button tokenizeCardButton;
     private Button authorizeCardButton;
     private Button captureChargeButton;
@@ -183,7 +182,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
         swipeCardButton = (Button) rootView.findViewById(R.id.swipeCardButton);
         processPaymentButton = (Button) rootView.findViewById(R.id.processPaymentButton);
-        displaySerialButton = (Button) rootView.findViewById(R.id.serialNumber);
         tokenizeCardButton = (Button) rootView.findViewById(R.id.tokenizeCard);
         resetFieldsButton = (Button) rootView.findViewById(R.id.resetFieldsButton);
         authorizeCardButton = (Button) rootView.findViewById(R.id.authorizeCard);
@@ -226,7 +224,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
         swipeCardButton.setOnClickListener(buttonClickListener);
         processPaymentButton.setOnClickListener(buttonClickListener);
-        displaySerialButton.setOnClickListener(buttonClickListener);
         tokenizeCardButton.setOnClickListener(buttonClickListener);
         resetFieldsButton.setOnClickListener(buttonClickListener);
         captureChargeButton.setOnClickListener(buttonClickListener);
@@ -271,9 +268,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
                     dialogFragment.setRetainInstance(true);
                     dialogFragment.setCancelable(false);
                     dialogFragment.show(getFragmentManager(), "dialogFragment");
-                    break;
-                case R.id.serialNumber:
-                    displaySerialNumber();
                     break;
                 case R.id.tokenizeCard:
                     tokenizeCardMethod();
@@ -424,11 +418,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         Reader.getDefault(mContext)
                 .beginSwipe();
         mFieldHolder.resetFields();
-    }
-
-    private void displaySerialNumber() {
-        String s = Reader.serialNumber;
-        showAlert(s);
     }
 
     private void tokenizeCardMethod() {
@@ -631,7 +620,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         readerIsConnected = isConnected;
         readerStatus.setText(message);
         swipeCardButton.setEnabled(isConnected);
-        displaySerialButton.setEnabled(isConnected);
         autoConfigButton.setEnabled(isConnected);
 
         if (!isConnected) {
