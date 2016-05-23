@@ -115,6 +115,7 @@ public class MyCFDeviceHandler implements CardFlightDeviceHandler {
     public void readerIsConnecting() {
         // Deprecated - This method is a duplicate of readerIsAttached as of version 3.1 and will be
         // removed in a future release
+        this.uiHandler.updateReaderStatus(ReaderStatus.ATTACHED);
     }
 
     @Override
