@@ -1,0 +1,3 @@
+[submodule "cardflight-android"]
+	path = cardflight-android
+	url = https://github.com/CardFlight/cardflight-android
