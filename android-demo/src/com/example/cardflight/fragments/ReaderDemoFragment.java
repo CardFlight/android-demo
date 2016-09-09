@@ -4,8 +4,8 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -60,17 +60,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
-public class ReaderDemoFragment extends Fragment implements MyUIHandler {
+public class ReaderDemoFragment extends Fragment implements MyUIHandler, View.OnClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private Context mContext;
 
+    private Button connectAudiojackButton;
+    private Button connectBluetoothButton;
     private Button swipeCardButton;
     private Button processPaymentButton;
     private Button resetFieldsButton;
@@ -128,7 +131,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
         // Instantiate CardFlight Instance
         CardFlight.getInstance()
-                .setApiTokenAndAccountToken(Settings.API_TOKEN, Settings.ACCOUNT_TOKEN, new CardFlightApiKeyAccountTokenHandler() {
+                .setApiTokenAndAccountToken(mContext, Settings.API_TOKEN, Settings.ACCOUNT_TOKEN, new CardFlightApiKeyAccountTokenHandler() {
                     @Override
                     public void onSuccess() {
                         Log.i(TAG, "API Key and Account Token set!");
@@ -142,11 +145,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
         CardFlight.getInstance()
                 .setLogging(true);
-
-        // Instantiate Reader Instance
-        Reader.getDefault(mContext)
-                .setDeviceHandler(new MyCFDeviceHandler(this))
-                .setAutoConfigHandler(new MyCFAutoConfigHandler(this));
 
         // Create the listener that listens to when the PaymentView has been filled out manually
         onCardKeyedListener = new OnCardKeyedListener() {
@@ -180,6 +178,8 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         mFieldHolder.setOnCardKeyedListener(onCardKeyedListener);
         mFieldHolder.setOnFieldResetListener(onFieldResetListener);
 
+        connectAudiojackButton = (Button) rootView.findViewById(R.id.connectAudiojackReaderButton);
+        connectBluetoothButton = (Button) rootView.findViewById(R.id.connectBluetoothReaderButton);
         swipeCardButton = (Button) rootView.findViewById(R.id.swipeCardButton);
         processPaymentButton = (Button) rootView.findViewById(R.id.processPaymentButton);
         tokenizeCardButton = (Button) rootView.findViewById(R.id.tokenizeCard);
@@ -222,18 +222,20 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         });
         enableZipCode(true);
 
-        swipeCardButton.setOnClickListener(buttonClickListener);
-        processPaymentButton.setOnClickListener(buttonClickListener);
-        tokenizeCardButton.setOnClickListener(buttonClickListener);
-        resetFieldsButton.setOnClickListener(buttonClickListener);
-        captureChargeButton.setOnClickListener(buttonClickListener);
-        authorizeCardButton.setOnClickListener(buttonClickListener);
-        autoConfigButton.setOnClickListener(buttonClickListener);
-        zipCodeButton.setOnClickListener(buttonClickListener);
-        voidButton.setOnClickListener(buttonClickListener);
-        refundButton.setOnClickListener(buttonClickListener);
-        decryptButton.setOnClickListener(buttonClickListener);
-        serializeButton.setOnClickListener(buttonClickListener);
+        connectAudiojackButton.setOnClickListener(this);
+        connectBluetoothButton.setOnClickListener(this);
+        swipeCardButton.setOnClickListener(this);
+        processPaymentButton.setOnClickListener(this);
+        tokenizeCardButton.setOnClickListener(this);
+        resetFieldsButton.setOnClickListener(this);
+        captureChargeButton.setOnClickListener(this);
+        authorizeCardButton.setOnClickListener(this);
+        autoConfigButton.setOnClickListener(this);
+        zipCodeButton.setOnClickListener(this);
+        voidButton.setOnClickListener(this);
+        refundButton.setOnClickListener(this);
+        decryptButton.setOnClickListener(this);
+        serializeButton.setOnClickListener(this);
 
         if (readerIsConnected) {
             updateReaderStatus("Reader connected", true);
@@ -242,114 +244,89 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         }
     }
 
-    private View.OnClickListener buttonClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            DialogFragment dialogFragment;
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.connectAudiojackReaderButton:
+                Reader.getDefault(mContext)
+                        .setDeviceHandler(new MyCFDeviceHandler(this))
+                        .setAutoConfigHandler(new MyCFAutoConfigHandler(this));
+                break;
 
-            switch (v.getId()) {
-                case R.id.swipeCardButton:
-                    launchSwipeEvent();
-                    break;
-                case R.id.processPaymentButton:
-                    dialogFragment = new DialogFragment() {
-                        @Override
-                        public void onCreate(Bundle savedInstanceState) {
-                            super.onCreate(savedInstanceState);
+            case R.id.connectBluetoothReaderButton:
+                Reader.getDefault(mContext)
+                        .setDeviceHandler(new MyCFDeviceHandler(this))
+                        .setAutoConfigHandler(new MyCFAutoConfigHandler(this))
+                        .setIsBluetoothReader(true);
+                break;
 
-                            setRetainInstance(true);
-                        }
+            case R.id.swipeCardButton:
+                launchSwipeEvent();
+                break;
 
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return makeChargeDialog();
-                        }
-                    };
-                    dialogFragment.setRetainInstance(true);
-                    dialogFragment.setCancelable(false);
-                    dialogFragment.show(getFragmentManager(), "dialogFragment");
-                    break;
-                case R.id.tokenizeCard:
-                    tokenizeCardMethod();
-                    break;
-                case R.id.resetFieldsButton:
-                    // Call this to reset the fields.
-                    // Attach a #OnFieldResetListener to capture when fields have reset.
-                    mFieldHolder.resetFields();
-                    break;
-                case R.id.authorizeCard:
-                    dialogFragment = new DialogFragment() {
-                        @Override
-                        public void onCreate(Bundle savedInstanceState) {
-                            super.onCreate(savedInstanceState);
+            case R.id.processPaymentButton:
+                makeChargeDialog().show();
+                break;
 
-                            setRetainInstance(true);
-                        }
+            case R.id.tokenizeCard:
+                tokenizeCardMethod();
+                break;
 
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return makeAuthorizeDialog();
-                        }
-                    };
-                    dialogFragment.setRetainInstance(true);
-                    dialogFragment.setCancelable(false);
-                    dialogFragment.show(getFragmentManager(), "dialogFragment");
-                    break;
-                case R.id.processCapture:
-                    captureCharge();
-                    break;
-                case R.id.autoConfigButton:
-                    Reader.getDefault(mContext)
-                            .startAutoConfigProcess();
-                    break;
-                case R.id.refundCard:
-                    dialogFragment = new DialogFragment() {
-                        @Override
-                        public void onCreate(Bundle savedInstanceState) {
-                            super.onCreate(savedInstanceState);
+            case R.id.resetFieldsButton:
+                // Call this to reset the fields.
+                // Attach a #OnFieldResetListener to capture when fields have reset.
+                mFieldHolder.resetFields();
+                break;
 
-                            setRetainInstance(true);
-                        }
+            case R.id.authorizeCard:
+                makeAuthorizeDialog().show();
+                break;
 
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return makeRefundDialog();
-                        }
-                    };
-                    dialogFragment.setRetainInstance(true);
-                    dialogFragment.setCancelable(false);
-                    dialogFragment.show(getFragmentManager(), "dialogFragment");
-                    break;
-                case R.id.voidCard:
-                    voidCharge();
-                    break;
-                case R.id.fetchZipCodeButton:
-                    if (mCard != null) {
-                        showAlert(String.format("Zip Code: %s", mCard.getZipCode()));
-                    } else {
-                        showAlert("No card is present");
+            case R.id.processCapture:
+                captureCharge();
+                break;
+
+            case R.id.autoConfigButton:
+                Reader.getDefault(mContext)
+                        .startAutoConfigProcess();
+                break;
+
+            case R.id.refundCard:
+                makeRefundDialog().show();
+                break;
+
+            case R.id.voidCard:
+                voidCharge();
+                break;
+
+            case R.id.fetchZipCodeButton:
+                if (mCard != null) {
+                    showAlert(String.format("Zip Code: %s", mCard.getZipCode()));
+                } else {
+                    showAlert("No card is present");
+                }
+                break;
+
+            case R.id.decryptButton:
+                decryptCardMethod();
+                break;
+
+            case R.id.displaySerialized:
+                if (mCard != null) {
+                    serializeCard(mCard);
+                    Log.d(TAG, "file contents = " + readFile("card.bin"));
+                    Card newcard = unserializeCard("card.bin");
+
+                    if (newcard != null) {
+                        showAlert("Check debug logs for details...");
+                        Log.d(TAG, "newcard = " + newcard.getCardType() + " " + newcard.getLast4());
                     }
-                    break;
-                case R.id.decryptButton:
-                    decryptCardMethod();
-                    break;
-                case R.id.displaySerialized:
-                    if (mCard != null) {
-                        serializeCard(mCard);
-                        Log.d(TAG, "file contents = " + readFile("card.bin"));
-                        Card newcard = unserializeCard("card.bin");
-
-                        if (newcard != null) {
-                            showAlert("Check debug logs for details...");
-                            Log.d(TAG, "newcard = " + newcard.getCardType() + " " + newcard.getLast4());
-                        }
-                    } else {
-                        showAlert("Card not entered!");
-                    }
-                    break;
-            }
+                } else {
+                    showAlert("Card not entered!");
+                }
+                break;
         }
-    };
+    }
 
     private void serializeCard(Card card) {
         File file = new File(mContext.getFilesDir().getPath() + "/card.bin");
@@ -847,17 +824,25 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
             case CONNECTED:
                 updateReaderStatus("Reader connected", true);
                 break;
-            case ATTACHED:
+
+            case CONNECTING:
                 updateReaderStatus("Reader connecting", false);
                 break;
+
+            case UPDATING:
+                updateReaderStatus("Reader updating", true);
+                break;
+
             case DISCONNECTED:
                 updateReaderStatus("Reader disconnected", false);
                 break;
+
             case UNKNOWN:
                 updateReaderStatus("Unknown error", false);
 
                 autoConfigButton.setEnabled(true);
                 break;
+
             case NOT_COMPATIBLE:
                 updateReaderStatus("Device not compatible", false);
 
@@ -926,5 +911,27 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         setCardPresent();
 
         swipeCardButton.setEnabled(true);
+    }
+
+    @Override
+    public void showBluetoothDevices(ArrayList<BluetoothDevice> devices) {
+        CharSequence[] items = new CharSequence[devices.size()];
+
+        int index = 0;
+        for (BluetoothDevice device : devices) {
+            items[index++] = device.getName();
+        }
+
+        new AlertDialog.Builder(mContext)
+                .setCancelable(false)
+                .setTitle("Select Bluetooth Device")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Reader.getDefault(mContext)
+                                .selectBluetoothDevice(which);
+                    }
+                }).create()
+                .show();
     }
 }
