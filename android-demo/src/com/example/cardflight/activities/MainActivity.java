@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 changeFragment(mSplashFragment);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
+
             case R.id.nav_reader:
                 changeFragment(mReaderDemoFragment);
                 mDrawerLayout.closeDrawer(GravityCompat.START);

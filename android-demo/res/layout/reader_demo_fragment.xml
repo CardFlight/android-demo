@@ -65,37 +65,23 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/connectAudiojackReaderButton"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:layout_marginBottom="@dimen/content_padding"
-            android:layout_marginTop="@dimen/content_padding"
-            android:orientation="horizontal">
+            android:text="@string/connect_audiojack_reader" />
 
-            <Button
-                android:id="@+id/connectAudiojackReaderButton"
-                style="@style/CFButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:text="@string/connect_audiojack_reader" />
-
-            <Button
-                android:id="@+id/connectBluetoothReaderButton"
-                style="@style/CFButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:text="@string/connect_bluetooth_reader" />
-
-        </LinearLayout>
+        <Button
+            android:id="@+id/connectBluetoothReaderButton"
+            style="@style/CFButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/content_padding"
+            android:text="@string/connect_bluetooth_reader" />
 
         <Button
             android:id="@+id/autoConfigButton"
@@ -103,6 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/content_padding"
             android:text="@string/run_auto_config" />
 
         <Button
@@ -112,7 +99,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/content_padding"
-            android:layout_marginTop="@dimen/content_padding"
             android:text="@string/swipe_card" />
 
         <View
