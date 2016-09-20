@@ -4,8 +4,8 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -60,49 +60,50 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Copyright (c) 2015 CardFlight Inc. All rights reserved.
  */
-public class ReaderDemoFragment extends Fragment implements MyUIHandler {
+public class ReaderDemoFragment extends Fragment implements MyUIHandler, View.OnClickListener, OnCardKeyedListener, OnFieldResetListener, CompoundButton.OnCheckedChangeListener {
 
     private final String TAG = this.getClass().getSimpleName();
 
     private Context mContext;
 
-    private Button swipeCardButton;
-    private Button processPaymentButton;
-    private Button resetFieldsButton;
-    private Button tokenizeCardButton;
-    private Button authorizeCardButton;
-    private Button captureChargeButton;
-    private Button autoConfigButton;
-    private Button zipCodeButton;
-    private Button voidButton;
-    private Button refundButton;
-    private Button decryptButton;
-    private Button serializeButton;
-    private TextView readerStatus;
-    private TextView cardFirstSix;
-    private TextView cardType;
-    private TextView cardLastFour;
-    private TextView chargeToken;
-    private TextView chargeAmount;
-    private TextView chargeCaptured;
-    private TextView chargeVoided;
-    private TextView chargeRefunded;
-    private TextView zipCode;
-    private TextView cardHolderName;
-    private CheckBox zipCodeEnabled;
+    private Button mButtonConnectAudiojack;
+    private Button mButtonConnectBluetooth;
+    private Button mButtonSwipeCard;
+    private Button mButtonProcessPayment;
+    private Button mButtonResetFields;
+    private Button mButtonTokenize;
+    private Button mButtonAuthorize;
+    private Button mButtonCapture;
+    private Button mButtonAutoConfig;
+    private Button mButtonZipCode;
+    private Button mButtonVoid;
+    private Button mButtonRefund;
+    private Button mButtonDecrypt;
+    private Button mButtonSerialize;
+    private TextView mTextReaderStatus;
+    private TextView mTextCardType;
+    private TextView mTextFirstSix;
+    private TextView mTextLastFour;
+    private TextView mTextChargeToken;
+    private TextView mTextAmount;
+    private TextView mTextCaptured;
+    private TextView mTextVoided;
+    private TextView mTextRefunded;
+    private TextView mTextZipCode;
+    private TextView mTextName;
+    private CheckBox mCheckboxZipCode;
+    private PaymentView mPaymentView;
+
+    private Snackbar mSnackbar;
     private Card mCard = null;
     private Charge mCharge = null;
-    private OnCardKeyedListener onCardKeyedListener;
-    private OnFieldResetListener onFieldResetListener;
-    private PaymentView mFieldHolder;
-
-    private Snackbar alert;
-    private boolean readerIsConnected;
+    private boolean mReaderIsConnected;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -128,7 +129,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
         // Instantiate CardFlight Instance
         CardFlight.getInstance()
-                .setApiTokenAndAccountToken(Settings.API_TOKEN, Settings.ACCOUNT_TOKEN, new CardFlightApiKeyAccountTokenHandler() {
+                .setApiTokenAndAccountToken(mContext, Settings.API_TOKEN, Settings.ACCOUNT_TOKEN, new CardFlightApiKeyAccountTokenHandler() {
                     @Override
                     public void onSuccess() {
                         Log.i(TAG, "API Key and Account Token set!");
@@ -142,70 +143,42 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
         CardFlight.getInstance()
                 .setLogging(true);
-
-        // Instantiate Reader Instance
-        Reader.getDefault(mContext)
-                .setDeviceHandler(new MyCFDeviceHandler(this))
-                .setAutoConfigHandler(new MyCFAutoConfigHandler(this));
-
-        // Create the listener that listens to when the PaymentView has been filled out manually
-        onCardKeyedListener = new OnCardKeyedListener() {
-
-            @Override
-            public void onCardKeyed(Card card) {
-                if (card != null) {
-                    mCard = card;
-                    fillFieldsWithData(mCard);
-                }
-            }
-        };
-
-        // Create the listener that listens to when the PaymentView has been cleared and reset.
-        // NOTE: This is not necessary and should be used to simply clear out any variables set.
-        onFieldResetListener = new OnFieldResetListener() {
-            @Override
-            public void onFieldReset() {
-                fieldsReset();
-            }
-        };
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.reader_demo_fragment, container, false);
 
-        mFieldHolder = (PaymentView) rootView.findViewById(R.id.cardEditText);
-        // Set the CardKeyedListener and FieldResetListener here
-        mFieldHolder.setOnCardKeyedListener(onCardKeyedListener);
-        mFieldHolder.setOnFieldResetListener(onFieldResetListener);
+        mButtonConnectAudiojack = (Button) rootView.findViewById(R.id.connectAudiojackReaderButton);
+        mButtonConnectBluetooth = (Button) rootView.findViewById(R.id.connectBluetoothReaderButton);
+        mButtonSwipeCard = (Button) rootView.findViewById(R.id.swipeCardButton);
+        mButtonProcessPayment = (Button) rootView.findViewById(R.id.processPaymentButton);
+        mButtonTokenize = (Button) rootView.findViewById(R.id.tokenizeCard);
+        mButtonResetFields = (Button) rootView.findViewById(R.id.resetFieldsButton);
+        mButtonAuthorize = (Button) rootView.findViewById(R.id.authorizeCard);
+        mButtonCapture = (Button) rootView.findViewById(R.id.processCapture);
+        mButtonDecrypt = (Button) rootView.findViewById(R.id.decryptButton);
+        mButtonAutoConfig = (Button) rootView.findViewById(R.id.autoConfigButton);
+        mButtonZipCode = (Button) rootView.findViewById(R.id.fetchZipCodeButton);
+        mButtonVoid = (Button) rootView.findViewById(R.id.voidCard);
+        mButtonRefund = (Button) rootView.findViewById(R.id.refundCard);
+        mButtonSerialize = (Button) rootView.findViewById(R.id.displaySerialized);
 
-        swipeCardButton = (Button) rootView.findViewById(R.id.swipeCardButton);
-        processPaymentButton = (Button) rootView.findViewById(R.id.processPaymentButton);
-        tokenizeCardButton = (Button) rootView.findViewById(R.id.tokenizeCard);
-        resetFieldsButton = (Button) rootView.findViewById(R.id.resetFieldsButton);
-        authorizeCardButton = (Button) rootView.findViewById(R.id.authorizeCard);
-        captureChargeButton = (Button) rootView.findViewById(R.id.processCapture);
-        decryptButton = (Button) rootView.findViewById(R.id.decryptButton);
-        autoConfigButton = (Button) rootView.findViewById(R.id.autoConfigButton);
-        zipCodeButton = (Button) rootView.findViewById(R.id.fetchZipCodeButton);
-        voidButton = (Button) rootView.findViewById(R.id.voidCard);
-        refundButton = (Button) rootView.findViewById(R.id.refundCard);
-        serializeButton = (Button) rootView.findViewById(R.id.displaySerialized);
-        readerStatus = (TextView) rootView.findViewById(R.id.reader_status);
-        cardHolderName = (TextView) rootView.findViewById(R.id.cardHolderName);
+        mTextReaderStatus = (TextView) rootView.findViewById(R.id.reader_status);
+        mTextName = (TextView) rootView.findViewById(R.id.cardHolderName);
+        mTextFirstSix = (TextView) rootView.findViewById(R.id.card_first_six);
+        mTextCardType = (TextView) rootView.findViewById(R.id.card_type);
+        mTextLastFour = (TextView) rootView.findViewById(R.id.card_last_four);
+        mTextChargeToken = (TextView) rootView.findViewById(R.id.charge_token);
+        mTextAmount = (TextView) rootView.findViewById(R.id.charge_amount);
+        mTextCaptured = (TextView) rootView.findViewById(R.id.charge_captured);
+        mTextVoided = (TextView) rootView.findViewById(R.id.charge_voided);
+        mTextRefunded = (TextView) rootView.findViewById(R.id.charge_refund);
+        mTextZipCode = (TextView) rootView.findViewById(R.id.zip_code_field);
 
-        cardFirstSix = (TextView) rootView.findViewById(R.id.card_first_six);
-        cardType = (TextView) rootView.findViewById(R.id.card_type);
-        cardLastFour = (TextView) rootView.findViewById(R.id.card_last_four);
-        chargeToken = (TextView) rootView.findViewById(R.id.charge_token);
-        chargeAmount = (TextView) rootView.findViewById(R.id.charge_amount);
-        chargeCaptured = (TextView) rootView.findViewById(R.id.charge_captured);
-        chargeVoided = (TextView) rootView.findViewById(R.id.charge_voided);
-        chargeRefunded = (TextView) rootView.findViewById(R.id.charge_refund);
-        zipCode = (TextView) rootView.findViewById(R.id.zip_code_field);
+        mPaymentView = (PaymentView) rootView.findViewById(R.id.cardEditText);
 
-        zipCodeEnabled = (CheckBox) rootView.findViewById(R.id.zip_code_switch);
+        mCheckboxZipCode = (CheckBox) rootView.findViewById(R.id.zip_code_switch);
 
         return rootView;
     }
@@ -214,142 +187,289 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     public void onResume() {
         super.onResume();
 
-        zipCodeEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                enableZipCode(isChecked);
-            }
-        });
+        mButtonConnectAudiojack.setOnClickListener(this);
+        mButtonConnectBluetooth.setOnClickListener(this);
+        mButtonSwipeCard.setOnClickListener(this);
+        mButtonProcessPayment.setOnClickListener(this);
+        mButtonTokenize.setOnClickListener(this);
+        mButtonResetFields.setOnClickListener(this);
+        mButtonCapture.setOnClickListener(this);
+        mButtonAuthorize.setOnClickListener(this);
+        mButtonAutoConfig.setOnClickListener(this);
+        mButtonZipCode.setOnClickListener(this);
+        mButtonVoid.setOnClickListener(this);
+        mButtonRefund.setOnClickListener(this);
+        mButtonDecrypt.setOnClickListener(this);
+        mButtonSerialize.setOnClickListener(this);
+
+        mPaymentView.setOnCardKeyedListener(this);
+        mPaymentView.setOnFieldResetListener(this);
+        mCheckboxZipCode.setOnCheckedChangeListener(this);
+
         enableZipCode(true);
 
-        swipeCardButton.setOnClickListener(buttonClickListener);
-        processPaymentButton.setOnClickListener(buttonClickListener);
-        tokenizeCardButton.setOnClickListener(buttonClickListener);
-        resetFieldsButton.setOnClickListener(buttonClickListener);
-        captureChargeButton.setOnClickListener(buttonClickListener);
-        authorizeCardButton.setOnClickListener(buttonClickListener);
-        autoConfigButton.setOnClickListener(buttonClickListener);
-        zipCodeButton.setOnClickListener(buttonClickListener);
-        voidButton.setOnClickListener(buttonClickListener);
-        refundButton.setOnClickListener(buttonClickListener);
-        decryptButton.setOnClickListener(buttonClickListener);
-        serializeButton.setOnClickListener(buttonClickListener);
-
-        if (readerIsConnected) {
+        if (mReaderIsConnected) {
             updateReaderStatus("Reader connected", true);
         } else {
             updateReaderStatus("Reader disconnected", false);
         }
     }
 
-    private View.OnClickListener buttonClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            DialogFragment dialogFragment;
+    @Override
+    public void onPause() {
+        super.onPause();
 
-            switch (v.getId()) {
-                case R.id.swipeCardButton:
-                    launchSwipeEvent();
-                    break;
-                case R.id.processPaymentButton:
-                    dialogFragment = new DialogFragment() {
-                        @Override
-                        public void onCreate(Bundle savedInstanceState) {
-                            super.onCreate(savedInstanceState);
+        Reader.tearDown();
+    }
 
-                            setRetainInstance(true);
-                        }
 
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return makeChargeDialog();
-                        }
-                    };
-                    dialogFragment.setRetainInstance(true);
-                    dialogFragment.setCancelable(false);
-                    dialogFragment.show(getFragmentManager(), "dialogFragment");
-                    break;
-                case R.id.tokenizeCard:
-                    tokenizeCardMethod();
-                    break;
-                case R.id.resetFieldsButton:
-                    // Call this to reset the fields.
-                    // Attach a #OnFieldResetListener to capture when fields have reset.
-                    mFieldHolder.resetFields();
-                    break;
-                case R.id.authorizeCard:
-                    dialogFragment = new DialogFragment() {
-                        @Override
-                        public void onCreate(Bundle savedInstanceState) {
-                            super.onCreate(savedInstanceState);
+    /***********************************************************************************************
+     * MyUIHandler implementation
+     **********************************************************************************************/
 
-                            setRetainInstance(true);
-                        }
+    @Override
+    public void updateReaderStatus(MyCFDeviceHandler.ReaderStatus status) {
+        switch (status) {
+            case CONNECTED:
+                updateReaderStatus("Reader connected", true);
+                break;
 
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return makeAuthorizeDialog();
-                        }
-                    };
-                    dialogFragment.setRetainInstance(true);
-                    dialogFragment.setCancelable(false);
-                    dialogFragment.show(getFragmentManager(), "dialogFragment");
-                    break;
-                case R.id.processCapture:
-                    captureCharge();
-                    break;
-                case R.id.autoConfigButton:
-                    Reader.getDefault(mContext)
-                            .startAutoConfigProcess();
-                    break;
-                case R.id.refundCard:
-                    dialogFragment = new DialogFragment() {
-                        @Override
-                        public void onCreate(Bundle savedInstanceState) {
-                            super.onCreate(savedInstanceState);
+            case CONNECTING:
+                updateReaderStatus("Reader connecting", false);
+                break;
 
-                            setRetainInstance(true);
-                        }
+            case UPDATING:
+                updateReaderStatus("Reader updating", true);
+                break;
 
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            return makeRefundDialog();
-                        }
-                    };
-                    dialogFragment.setRetainInstance(true);
-                    dialogFragment.setCancelable(false);
-                    dialogFragment.show(getFragmentManager(), "dialogFragment");
-                    break;
-                case R.id.voidCard:
-                    voidCharge();
-                    break;
-                case R.id.fetchZipCodeButton:
-                    if (mCard != null) {
-                        showAlert(String.format("Zip Code: %s", mCard.getZipCode()));
-                    } else {
-                        showAlert("No card is present");
-                    }
-                    break;
-                case R.id.decryptButton:
-                    decryptCardMethod();
-                    break;
-                case R.id.displaySerialized:
-                    if (mCard != null) {
-                        serializeCard(mCard);
-                        Log.d(TAG, "file contents = " + readFile("card.bin"));
-                        Card newcard = unserializeCard("card.bin");
+            case DISCONNECTED:
+                updateReaderStatus("Reader disconnected", false);
+                break;
 
-                        if (newcard != null) {
-                            showAlert("Check debug logs for details...");
-                            Log.d(TAG, "newcard = " + newcard.getCardType() + " " + newcard.getLast4());
-                        }
-                    } else {
-                        showAlert("Card not entered!");
-                    }
-                    break;
-            }
+            case UNKNOWN:
+                updateReaderStatus("Unknown error", false);
+
+                mButtonAutoConfig.setEnabled(true);
+                break;
+
+            case NOT_COMPATIBLE:
+                updateReaderStatus("Device not compatible", false);
+
+                mButtonAutoConfig.setEnabled(true);
+                break;
         }
-    };
+    }
+
+    @Override
+    public void showAlert(String message) {
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
+            mSnackbar = null;
+        }
+
+        if (getView() != null) {
+            mSnackbar = Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE);
+
+            View view = mSnackbar.getView();
+            TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+            tv.setTextColor(Color.WHITE);
+
+            mSnackbar.setAction("Dismiss", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSnackbar.dismiss();
+                }
+            });
+
+            mSnackbar.setActionTextColor(ContextCompat.getColor(mContext, R.color.cardflight_blue));
+
+            mSnackbar.show();
+        }
+    }
+
+    @Override
+    public void showConfirmCharge(String prompt) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+
+        dialogBuilder.setTitle("Confirm Transaction");
+        dialogBuilder.setMessage(prompt);
+
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Reader.getDefault(mContext).emvProcessTransaction(true);
+
+                dialog.dismiss();
+            }
+        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Reader.getDefault(mContext).emvProcessTransaction(false);
+
+                dialog.dismiss();
+            }
+        });
+
+        dialogBuilder.create().show();
+    }
+
+    @Override
+    public void setCard(Card card) {
+        mCard = card;
+
+        setCardPresent();
+
+        mButtonSwipeCard.setEnabled(true);
+    }
+
+    @Override
+    public void showBluetoothDevices(ArrayList<BluetoothDevice> devices) {
+        CharSequence[] items = new CharSequence[devices.size()];
+
+        int index = 0;
+        for (BluetoothDevice device : devices) {
+            items[index++] = device.getName();
+        }
+
+        new AlertDialog.Builder(mContext)
+                .setCancelable(false)
+                .setTitle("Select Bluetooth Device")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Reader.getDefault(mContext)
+                                .selectBluetoothDevice(which);
+                    }
+                }).create()
+                .show();
+    }
+
+
+    /***********************************************************************************************
+     * View.OnClickListener implementation
+     **********************************************************************************************/
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.connectAudiojackReaderButton:
+                Reader.getDefault(mContext)
+                        .setDeviceHandler(new MyCFDeviceHandler(this))
+                        .setAutoConfigHandler(new MyCFAutoConfigHandler(this));
+                break;
+
+            case R.id.connectBluetoothReaderButton:
+                Reader.getDefault(mContext)
+                        .setDeviceHandler(new MyCFDeviceHandler(this))
+                        .setAutoConfigHandler(new MyCFAutoConfigHandler(this))
+                        .setIsBluetoothReader(true);
+                break;
+
+            case R.id.swipeCardButton:
+                launchSwipeEvent();
+                break;
+
+            case R.id.processPaymentButton:
+                makeChargeDialog().show();
+                break;
+
+            case R.id.tokenizeCard:
+                tokenizeCardMethod();
+                break;
+
+            case R.id.resetFieldsButton:
+                // Call this to reset the fields.
+                // Attach a #OnFieldResetListener to capture when fields have reset.
+                mPaymentView.resetFields();
+                break;
+
+            case R.id.authorizeCard:
+                makeAuthorizeDialog().show();
+                break;
+
+            case R.id.processCapture:
+                captureCharge();
+                break;
+
+            case R.id.autoConfigButton:
+                Reader.getDefault(mContext)
+                        .startAutoConfigProcess();
+                break;
+
+            case R.id.refundCard:
+                makeRefundDialog().show();
+                break;
+
+            case R.id.voidCard:
+                voidCharge();
+                break;
+
+            case R.id.fetchZipCodeButton:
+                if (mCard != null) {
+                    showAlert(String.format("Zip Code: %s", mCard.getZipCode()));
+                } else {
+                    showAlert("No card is present");
+                }
+                break;
+
+            case R.id.decryptButton:
+                decryptCardMethod();
+                break;
+
+            case R.id.displaySerialized:
+                if (mCard != null) {
+                    serializeCard(mCard);
+                    Log.d(TAG, "file contents = " + readFile("card.bin"));
+                    Card newcard = unserializeCard("card.bin");
+
+                    if (newcard != null) {
+                        showAlert("Check debug logs for details...");
+                        Log.d(TAG, "newcard = " + newcard.getCardType() + " " + newcard.getLast4());
+                    }
+                } else {
+                    showAlert("Card not entered!");
+                }
+                break;
+        }
+    }
+
+
+    /***********************************************************************************************
+     * OnCardKeyedListener implementation
+     **********************************************************************************************/
+
+    @Override
+    public void onCardKeyed(Card card) {
+        if (card != null) {
+            mCard = card;
+            fillFieldsWithData(mCard);
+        }
+    }
+
+
+    /***********************************************************************************************
+     * OnFieldResetListener implementation
+     **********************************************************************************************/
+
+    @Override
+    public void onFieldReset() {
+        fieldsReset();
+    }
+
+
+    /***********************************************************************************************
+     * CompoundButton.OnCheckedChangeListener implementation
+     **********************************************************************************************/
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+        enableZipCode(isChecked);
+    }
+
+
+    /***********************************************************************************************
+     * Private methods
+     **********************************************************************************************/
 
     private void serializeCard(Card card) {
         File file = new File(mContext.getFilesDir().getPath() + "/card.bin");
@@ -405,19 +525,19 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     }
 
     private void enableZipCode(boolean enable) {
-        mFieldHolder.enableZipCode(enable);
-        zipCodeEnabled.setChecked(enable);
+        mPaymentView.enableZipCode(enable);
+        mCheckboxZipCode.setChecked(enable);
         if (enable) {
-            zipCodeButton.setVisibility(View.VISIBLE);
+            mButtonZipCode.setVisibility(View.VISIBLE);
         } else {
-            zipCodeButton.setVisibility(View.GONE);
+            mButtonZipCode.setVisibility(View.GONE);
         }
     }
 
     private void launchSwipeEvent() {
         Reader.getDefault(mContext)
                 .beginSwipe();
-        mFieldHolder.resetFields();
+        mPaymentView.resetFields();
     }
 
     private void tokenizeCardMethod() {
@@ -451,7 +571,7 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
 
                 @Override
                 public void decryptSuccess(HashMap decryptData) {
-                    Toast.makeText(getApplicationContext(),
+                    Toast.makeText(mContext,
                             "Decrypt completed: " + decryptData.toString(), Toast.LENGTH_LONG)
                             .show();
                 }
@@ -617,10 +737,10 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     }
 
     private void updateReaderStatus(String message, boolean isConnected) {
-        readerIsConnected = isConnected;
-        readerStatus.setText(message);
-        swipeCardButton.setEnabled(isConnected);
-        autoConfigButton.setEnabled(isConnected);
+        mReaderIsConnected = isConnected;
+        mTextReaderStatus.setText(message);
+        mButtonSwipeCard.setEnabled(isConnected);
+        mButtonAutoConfig.setEnabled(isConnected);
 
         if (!isConnected) {
             fieldsReset();
@@ -628,83 +748,83 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
     }
 
     private void chargePresent() {
-        captureChargeButton.setEnabled(true);
-        chargeToken.setText(mCharge.getToken());
-        chargeAmount.setText(String.format("$%s", mCharge.getAmount().toString()));
+        mButtonCapture.setEnabled(true);
+        mTextChargeToken.setText(mCharge.getToken());
+        mTextAmount.setText(String.format("$%s", mCharge.getAmount().toString()));
     }
 
     private void chargeUpdated() {
-        chargeCaptured.setText(String.valueOf(mCharge.isCaptured()));
-        chargeVoided.setText(String.valueOf(mCharge.isVoided()));
-        chargeRefunded.setText(String.format("%s | $%s", mCharge.isRefunded(),
+        mTextCaptured.setText(String.valueOf(mCharge.isCaptured()));
+        mTextVoided.setText(String.valueOf(mCharge.isVoided()));
+        mTextRefunded.setText(String.format("%s | $%s", mCharge.isRefunded(),
                 mCharge.isRefunded() ? mCharge.getAmountRefunded().toString() : "-.--"));
 
         if (mCharge.isCaptured() && !mCharge.isVoided() && !mCharge.isRefunded()) {
-            processPaymentButton.setEnabled(false);
-            captureChargeButton.setEnabled(false);
-            authorizeCardButton.setEnabled(false);
-            voidButton.setEnabled(true);
-            refundButton.setEnabled(true);
+            mButtonProcessPayment.setEnabled(false);
+            mButtonCapture.setEnabled(false);
+            mButtonAuthorize.setEnabled(false);
+            mButtonVoid.setEnabled(true);
+            mButtonRefund.setEnabled(true);
         } else if (mCharge.isRefunded() || mCharge.isVoided()) {
-            processPaymentButton.setEnabled(false);
-            captureChargeButton.setEnabled(false);
-            authorizeCardButton.setEnabled(false);
-            voidButton.setEnabled(false);
-            refundButton.setEnabled(false);
+            mButtonProcessPayment.setEnabled(false);
+            mButtonCapture.setEnabled(false);
+            mButtonAuthorize.setEnabled(false);
+            mButtonVoid.setEnabled(false);
+            mButtonRefund.setEnabled(false);
         } else {
-            voidButton.setEnabled(false);
-            refundButton.setEnabled(false);
-            processPaymentButton.setEnabled(true);
-            captureChargeButton.setEnabled(true);
-            authorizeCardButton.setEnabled(true);
+            mButtonVoid.setEnabled(false);
+            mButtonRefund.setEnabled(false);
+            mButtonProcessPayment.setEnabled(true);
+            mButtonCapture.setEnabled(true);
+            mButtonAuthorize.setEnabled(true);
         }
     }
 
     private void chargeCleared() {
-        captureChargeButton.setEnabled(false);
-        voidButton.setEnabled(false);
-        refundButton.setEnabled(false);
+        mButtonCapture.setEnabled(false);
+        mButtonVoid.setEnabled(false);
+        mButtonRefund.setEnabled(false);
 
-        chargeToken.setText("---");
-        chargeAmount.setText("$-.--");
+        mTextChargeToken.setText("---");
+        mTextAmount.setText("$-.--");
 
-        chargeCaptured.setText("---");
-        chargeVoided.setText("---");
-        chargeRefunded.setText("---");
+        mTextCaptured.setText("---");
+        mTextVoided.setText("---");
+        mTextRefunded.setText("---");
     }
 
     private void setCardPresent() {
         if (mCard == null) {
-            cardHolderName.setText("");
-            cardType.setText("");
-            cardFirstSix.setText("");
-            cardLastFour.setText("");
-            zipCode.setText("");
+            mTextName.setText("");
+            mTextCardType.setText("");
+            mTextFirstSix.setText("");
+            mTextLastFour.setText("");
+            mTextZipCode.setText("");
         } else {
-            cardHolderName.setText(mCard.getName());
-            cardType.setText(mCard.getType());
-            cardFirstSix.setText(mCard.getFirst6());
-            cardLastFour.setText(mCard.getLast4());
-            zipCode.setText(mCard.getZipCode());
+            mTextName.setText(mCard.getName());
+            mTextCardType.setText(mCard.getType());
+            mTextFirstSix.setText(mCard.getFirst6());
+            mTextLastFour.setText(mCard.getLast4());
+            mTextZipCode.setText(mCard.getZipCode());
         }
 
-        processPaymentButton.setEnabled(true);
-        tokenizeCardButton.setEnabled(true);
-        decryptButton.setEnabled(true);
-        authorizeCardButton.setEnabled(true);
+        mButtonProcessPayment.setEnabled(true);
+        mButtonTokenize.setEnabled(true);
+        mButtonDecrypt.setEnabled(true);
+        mButtonAuthorize.setEnabled(true);
     }
 
     private void fieldsReset() {
         mCard = null;
-        cardFirstSix.setText("----");
-        cardLastFour.setText("----");
-        cardType.setText("----");
-        cardHolderName.setText("----");
+        mTextFirstSix.setText("----");
+        mTextLastFour.setText("----");
+        mTextCardType.setText("----");
+        mTextName.setText("----");
 
-        processPaymentButton.setEnabled(false);
-        tokenizeCardButton.setEnabled(false);
-        decryptButton.setEnabled(false);
-        authorizeCardButton.setEnabled(false);
+        mButtonProcessPayment.setEnabled(false);
+        mButtonTokenize.setEnabled(false);
+        mButtonDecrypt.setEnabled(false);
+        mButtonAuthorize.setEnabled(false);
         chargeCleared();
     }
 
@@ -712,21 +832,6 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         mCard = cardData;
         setCardPresent();
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Reader.tearDown();
-    }
-
-    private Context getApplicationContext() {
-        return mContext.getApplicationContext();
-    }
-
-    /**
-     * Dialog creators
-     */
 
     private Dialog makeChargeDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -839,92 +944,5 @@ public class ReaderDemoFragment extends Fragment implements MyUIHandler {
         builder.setView(editView);
 
         return builder.create();
-    }
-
-    @Override
-    public void updateReaderStatus(MyCFDeviceHandler.ReaderStatus status) {
-        switch (status) {
-            case CONNECTED:
-                updateReaderStatus("Reader connected", true);
-                break;
-            case ATTACHED:
-                updateReaderStatus("Reader connecting", false);
-                break;
-            case DISCONNECTED:
-                updateReaderStatus("Reader disconnected", false);
-                break;
-            case UNKNOWN:
-                updateReaderStatus("Unknown error", false);
-
-                autoConfigButton.setEnabled(true);
-                break;
-            case NOT_COMPATIBLE:
-                updateReaderStatus("Device not compatible", false);
-
-                autoConfigButton.setEnabled(true);
-                break;
-        }
-    }
-
-    @Override
-    public void showAlert(String message) {
-        if (alert != null) {
-            alert.dismiss();
-            alert = null;
-        }
-
-        if (getView() != null) {
-            alert = Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE);
-
-            View view = alert.getView();
-            TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
-            tv.setTextColor(Color.WHITE);
-
-            alert.setAction("Dismiss", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    alert.dismiss();
-                }
-            });
-
-            alert.setActionTextColor(ContextCompat.getColor(mContext, R.color.cardflight_blue));
-
-            alert.show();
-        }
-    }
-
-    @Override
-    public void showConfirmCharge(String prompt) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
-
-        dialogBuilder.setTitle("Confirm Transaction");
-        dialogBuilder.setMessage(prompt);
-
-        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Reader.getDefault(mContext).emvProcessTransaction(true);
-
-                dialog.dismiss();
-            }
-        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Reader.getDefault(mContext).emvProcessTransaction(false);
-
-                dialog.dismiss();
-            }
-        });
-
-        dialogBuilder.create().show();
-    }
-
-    @Override
-    public void setCard(Card card) {
-        mCard = card;
-
-        setCardPresent();
-
-        swipeCardButton.setEnabled(true);
     }
 }

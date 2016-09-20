@@ -27,6 +27,8 @@
     <string name="reader_address">BTMag Address</string>
     <string name="test_capture">Capture charge</string>
     <string name="auth_card">Authorize card</string>
+    <string name="connect_audiojack_reader">Connect Audiojack Reader</string>
+    <string name="connect_bluetooth_reader">Connect Bluetooth Reader</string>
     <string name="run_auto_config">Run AutoConfig</string>
     <string name="void_charge">Void Charge</string>
     <string name="refund_charge">Refund Charge</string>

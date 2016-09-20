@@ -1,5 +1,8 @@
 package com.example.cardflight.handlers;
 
+import android.bluetooth.BluetoothDevice;
+import android.support.v7.app.AlertDialog;
+
 import com.getcardflight.interfaces.CardFlightDeviceHandler;
 import com.getcardflight.models.CFEMVMessage;
 import com.getcardflight.models.Card;
@@ -14,7 +17,8 @@ import java.util.Locale;
 public class MyCFDeviceHandler implements CardFlightDeviceHandler {
 
     public enum ReaderStatus {
-        ATTACHED,
+        CONNECTING,
+        UPDATING,
         CONNECTED,
         DISCONNECTED,
         UNKNOWN,
@@ -56,11 +60,6 @@ public class MyCFDeviceHandler implements CardFlightDeviceHandler {
     }
 
     @Override
-    public void emvCardResponse(String last4, String cardType) {
-        this.uiHandler.showConfirmCharge("Charge " + cardType + "-" + last4);
-    }
-
-    @Override
     public void emvCardResponse(HashMap<String, Object> hashMap) {
         String cardType = (String) hashMap.get(Constants.CARD_TYPE);
         String firstSix = (String) hashMap.get(Constants.FIRST_SIX);
@@ -95,6 +94,11 @@ public class MyCFDeviceHandler implements CardFlightDeviceHandler {
     }
 
     @Override
+    public void emvTransactionVaultID(String s) {
+        this.uiHandler.showAlert("Vault ID: " + s);
+    }
+
+    @Override
     public void readerCardResponse(Card card, CardFlightError error) {
         if (error == null) {
             this.uiHandler.showAlert("Swipe completed");
@@ -107,15 +111,20 @@ public class MyCFDeviceHandler implements CardFlightDeviceHandler {
 
     @Override
     public void readerIsAttached() {
-        this.uiHandler.updateReaderStatus(ReaderStatus.ATTACHED);
+        // Deprecated - This method is a duplicate of readerIsConnecting as of version 3.1 and will be
+        // removed in a future release
+        this.uiHandler.updateReaderStatus(ReaderStatus.CONNECTING);
     }
 
     @Deprecated
     @Override
     public void readerIsConnecting() {
-        // Deprecated - This method is a duplicate of readerIsAttached as of version 3.1 and will be
-        // removed in a future release
-        this.uiHandler.updateReaderStatus(ReaderStatus.ATTACHED);
+        this.uiHandler.updateReaderStatus(ReaderStatus.CONNECTING);
+    }
+
+    @Override
+    public void readerIsUpdating() {
+        this.uiHandler.updateReaderStatus(ReaderStatus.UPDATING);
     }
 
     @Override
@@ -149,12 +158,7 @@ public class MyCFDeviceHandler implements CardFlightDeviceHandler {
     }
 
     @Override
-    public void deviceBeginSwipe() {
-        // Deprecated in SDK v3.0.4
-    }
-
-    @Override
-    public void readerFail(String errorMessage, int errorCode) {
-        // Deprecated in SDK v3.0.4
+    public void selectBluetoothDevice(ArrayList<BluetoothDevice> arrayList) {
+        this.uiHandler.showBluetoothDevices(arrayList);
     }
 }
